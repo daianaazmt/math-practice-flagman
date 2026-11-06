@@ -21,7 +21,9 @@ async function setupFirebase(config){
  let app=await import('https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js');
  dbAPI=await import('https://www.gstatic.com/firebasejs/10.14.1/firebase-database.js');
  authAPI=await import('https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js');
- let fb=app.getApps().find(x=>x.name==='flagman-secure')||app.initializeApp(config,'flagman-secure');
+ const teacherMode=new URLSearchParams(location.search).get('teacher')==='1';
+ const appName=teacherMode?'flagman-secure':'flagman-student-11';
+ let fb=app.getApps().find(x=>x.name===appName)||app.initializeApp(config,appName);
  databaseInstance=dbAPI.getDatabase(fb);authInstance=authAPI.getAuth(fb);
  await authInstance.authStateReady();
  let user=authInstance.currentUser;
