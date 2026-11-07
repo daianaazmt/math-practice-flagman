@@ -12,6 +12,7 @@
 .extra-content{padding-top:16px}.teacher-links{position:relative;font-size:14px}
 .teacher-links>div{position:absolute;right:0;top:28px;z-index:10;background:white;padding:16px;border:1px solid #d5e8ef;border-radius:10px;min-width:180px;box-shadow:0 6px 20px #17364b18}
 #teacherPracticeLinks{width:min(360px,85vw);max-height:55vh;overflow:auto}
+#teacherPracticeLinks details{margin:4px 0;padding-left:10px}#teacherPracticeLinks summary{padding:5px 0}
 #teacherPracticeLinks a{display:block;padding:6px 0}
 #firebaseMessage:empty{display:none}#studentDetail{margin-top:16px}
 @media(max-width:700px){.teacher-controls .practice-field{min-width:100%}.teacher-heading{align-items:flex-start}.teacher-links>div{left:0;right:auto}.teacher-controls button{flex:1}}
@@ -678,11 +679,23 @@ function teacherTopics(){
  week.disabled=term.value==='other';
  const shown=inTerm.filter(x=>x.week===week.value).sort((a,b)=>Number(a.lesson)-Number(b.lesson));
  setOptions($('teacherTopic'),shown.map(x=>x.topic),practiceLabel,current);
- const links=shown.flatMap(({topic,code})=>{
+ const menu=$('teacherPracticeLinks');
+ const opened=new Set([...menu.querySelectorAll('details[open]')].map(node=>node.dataset.group));
+ const link=({topic,code})=>{
   const route=code||(topic.startsWith('Practice 1 —')?'1':topic.startsWith('Practice 2 —')?'2':null);
-  return route?[`<a href="./?practice=${encodeURIComponent(route)}" target="_blank" rel="noopener">${safe(practiceLabel(topic))}</a>`]:[];
- });
- $('teacherPracticeLinks').innerHTML=links.join('')||'<span class="muted">Для этой группы нет отдельных ссылок.</span>';
+  return route?`<a href="./?practice=${encodeURIComponent(route)}" target="_blank" rel="noopener">${safe(practiceLabel(topic))}</a>`:'';
+ };
+ const section=(key,label,body)=>body?`<details data-group="${safe(key)}"${opened.has(key)?' open':''}><summary>${safe(label)}</summary>${body}</details>`:'';
+ const markup=ordered(items.map(item=>item.term)).map(t=>{
+  const group=items.filter(item=>item.term===t);
+  if(t==='other')return section(t,'Другие практики',group.map(link).join(''));
+  const weeks=ordered(group.map(item=>item.week)).map(w=>section(t+'.'+w,'Неделя '+w,
+   group.filter(item=>item.week===w).sort((a,b)=>Number(a.lesson)-Number(b.lesson)).map(link).join('')
+  )).join('');
+  return section(t,t+' четверть',weeks);
+ }).join('');
+ if(menu.dataset.markup!==markup){menu.innerHTML=markup;menu.dataset.markup=markup;}
+
 }
 function matchesTeacherResults(record){
  return record?.grade===$('teacherGrade').value &&
