@@ -101,7 +101,49 @@ function durationFor(grade,topic){let q=questions.find(x=>x.grade===grade&&x.top
  }catch(e){alert('Не удалось сохранить таймер в Firebase: '+e.message);}
 }
 setInterval(()=>{if(!$('student').classList.contains('hide')&&$('topic').value)updatePracticeTimer()},1000);function teacherGroup(){return questions.filter(q=>q.grade===gradeLevel($('teacherGrade').value)&&q.topic===$('teacherTopic').value)}function teacherTopics(){let current=$('teacherTopic').value;let t=[...new Set(questions.filter(q=>q.grade===gradeLevel($('teacherGrade').value)).map(q=>q.topic))];$('teacherTopic').innerHTML=t.map(x=>`<option value="${safe(x)}" ${x===current?'selected':''}>${safe(localizedTopic(x))}</option>`).join('')}
+let manualGrades={},manualGradeSource=null,openStudent=null;
+function manualKey(id){return encodeURIComponent(id).replaceAll('.','%2E')}
+function gradedRecord(uid){
+ const record=records[uid],manual=manualGrades[uid];
+ if(!record||!manual)return record;
+ const answers={...record.answers};
+ for(const q of teacherGroup()){
+  const points=manual[manualKey(q.id)];
+  if([0,0.5,1].includes(points))answers[q.id]={...answers[q.id],points,correct:points>0,manual:true};
+ }
+ return {...record,answers};
+}
+function watchManualGrades(){
+ if(!cloud?.isTeacher||!databaseInstance||manualGradeSource===databaseInstance)return;
+ manualGradeSource=databaseInstance;
+ dbAPI.onValue(dbAPI.ref(databaseInstance,'math-practice-demo/teacherGrades/11'),snapshot=>{
+  manualGrades=snapshot.val()||{};
+  renderTeacher();
+  if(openStudent&&!$('studentDetail').hidden)details(openStudent);
+ },error=>{$('firebaseMessage').textContent='Ручные оценки: '+error.message;});
+}
+async function saveManualGrade(select){
+ if(!cloud?.isTeacher||!dbAPI||!databaseInstance)return;
+ const {uid,question}=select.dataset;
+ if(!records[uid]||!teacherGroup().some(q=>q.id===question))return;
+ const value=select.value;
+ if(!['','0','0.5','1'].includes(value))return;
+ select.disabled=true;
+ try{
+  await dbAPI.set(dbAPI.ref(databaseInstance,'math-practice-demo/teacherGrades/11/'+uid+'/'+manualKey(question)),value===''?null:Number(value));
+ }catch(error){
+  $('firebaseMessage').textContent='Не удалось сохранить оценку: '+error.message;
+  if(openStudent&&!$('studentDetail').hidden)details(openStudent);
+ }finally{select.disabled=false;}
+}
+function manualGradeControl(uid,q){
+ if(!cloud?.isTeacher)return '';
+ const value=manualGrades[uid]?.[manualKey(q.id)];
+ return '<label>Ручная оценка <select data-uid="'+safe(uid)+'" data-question="'+safe(q.id)+'" onchange="saveManualGrade(this)">'+
+ [['','Автопроверка'],['0','✕ 0'],['0.5','½ балла'],['1','✓ 1 балл']].map(([v,label])=>'<option value="'+v+'"'+(String(value??'')===v?' selected':'')+'>'+label+'</option>').join('')+'</select></label>';
+}
 function renderTeacher() {
+ watchManualGrades();
  $('teacherSignIn').hidden=!!cloud?.isTeacher;
 
  teacherTopics();
@@ -111,27 +153,28 @@ function renderTeacher() {
  const questions = teacherGroup();
  const ids = Object.keys(records).filter(uid => {
   const record = records[uid];
-  return record?.grade === $('teacherGrade').value && (record.archived!==true || $('showArchived').checked) && (questions.some(q => record.answers?.[q.id]) || workFiles(record, topic, klass).length > 0);
+  return record?.grade === $('teacherGrade').value && (record.archived!==true || $('showArchived').checked) && (questions.some(q => gradedRecord(uid).answers?.[q.id]) || workFiles(record, topic, klass).length > 0);
  });
- ids.sort((a, b) => pointsFor(records[b], questions) - pointsFor(records[a], questions) || (records[a].name || '').localeCompare(records[b].name || ''));
+ ids.sort((a, b) => pointsFor(gradedRecord(b), questions) - pointsFor(gradedRecord(a), questions) || (records[a].name || '').localeCompare(records[b].name || ''));
  $('summary').textContent = ids.length + ' учеников с результатами · ' + questions.length + ' заданий';
  let html = '<table><thead><tr><th>Ученик</th><th>Оценка, %</th><th>Баллы ↓</th>';
  html += questions.map((question, index) => '<th title="' + safe(question.id + ' — ' + localizedPrompt(question)) + '">' + (index + 1) + '</th>').join('');
  html += '<th>Файлы</th></tr></thead><tbody>';
  for (const uid of ids) {
-  const record = records[uid], answers = record.answers || {}, points = pointsFor(record, questions);
+  const record = gradedRecord(uid), answers = record.answers || {}, points = pointsFor(record, questions);
   const argument = safe(JSON.stringify(uid));
   html += '<tr><td><button class="secondary" onclick="details(' + argument + ')">' + safe(record.name || 'Ученик') + '</button></td>';
   html += '<td>' + (questions.length ? Math.round(points / questions.length * 100) : 0) + '%</td><td>' + points + ' / ' + questions.length + '</td>';
   html += questions.map(question => {
    const answer = answers[question.id];
+   if(answer?.manual)return '<td title="Ручная оценка" style="color:#08789b">'+(answer.points===1?'✓':answer.points===0.5?'½':'✕')+' ✎</td>';
    return '<td style="color:' + (answer?.correct ? 'green' : answer?.attempts?.length ? '#b33' : '#999') + '">' + (answer?.correct ? '✓' : answer?.attempts?.length ? '✕' : '···') + '</td>';
   }).join('');
   html += '<td>' + filesHTML(uid, topic, klass) + '</td></tr>';
  }
  $('teacherTable').innerHTML = html + '</tbody></table>';
 }
-function details(n){$('studentDetail').hidden=false;let r=records[n]?.answers||{};let q=teacherGroup();$('studentDetail').innerHTML='<h3>'+safe(records[n]?.name||'Ученик')+'</h3>'+q.map(x=>{let v=r[x.id];return `<p><b>${safe(x.id)}</b> — ${safe(localizedPrompt(x))}<br>${v?`Попыток: ${v.attempts.length}; ${v.correct?'✓ Решено ('+(v.points??1)+' балла)':'Не решено (0 баллов)'}<br>Ответы: ${v.attempts.map(z=>safe(z.answer)+(z.correct?' ✓':' ✕')).join(' → ')}`:'Не начинал(а)'}</p>`}).join('')+'<h3>Прикреплённая работа</h3>'+filesHTML(n,$('teacherTopic').value,$('teacherGrade').value)}function download(name,data,type){let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([data],{type}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}function exportCSV(){let q=teacherGroup(),lines=[['Student','Class',...q.map(x=>x.id),'Correct','Total','Points','Percent','Files']];for(let n of Object.keys(records).filter(n=>records[n]?.grade===$('teacherGrade').value && (records[n].archived!==true || $('showArchived').checked))){let r=records[n]?.answers||{};lines.push([records[n]?.name||n,records[n]?.grade||'',...q.map(x=>r[x.id]?.correct?'Correct':r[x.id]?.attempts?.length?'Incorrect':'Not started'),q.filter(x=>r[x.id]?.correct).length,q.length,pointsFor(records[n],q),q.length?Math.round(pointsFor(records[n],q)/q.length*100):0,workFiles(records[n],$('teacherTopic').value,$('teacherGrade').value).length])}download('math-results.csv','\ufeff'+lines.map(row=>row.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n'),'text/csv')}function exportJSON(){download('math-questions.json',JSON.stringify(questions,null,2),'application/json')}function addQuestion(){let grade=$('newGrade').value,topic=$('newTopic').value.trim(),prompt=$('newPrompt').value.trim(),answer=$('newAnswer').value.trim();if(!topic||!prompt||!answer){alert('Заполните тему, условие и ответ');return}questions.push({id:grade+'-'+Date.now(),grade,topic,prompt,answer});saveQuestions();refreshTopics();renderTeacher();alert('Задача добавлена')}async function importQuestions(input){let file=input.files[0];if(!file)return;try{let q=JSON.parse(await file.text());if(!Array.isArray(q)||!q.length||!q.every(x=>['10','11'].includes(String(x.grade))&&x.topic&&x.prompt&&x.answer))throw Error('Неверный формат');q=q.filter(x=>String(x.grade)==='11');if(!q.length)throw Error('В файле нет задач для 11 класса');let ids=new Set(questions.map(x=>x.id));let additions=q.map((x,i)=>({...x,grade:String(x.grade),id:x.id||x.grade+'-import-'+i})).filter(x=>!ids.has(x.id));if(!confirm('Добавить '+additions.length+' новых задач, сохранив существующие?'))return;questions.push(...additions);saveQuestions();refreshTopics();renderTeacher();alert('Импортировано '+q.length+' задач')}catch(e){alert('Ошибка импорта: '+e.message)}}function disconnectFirebase(){$('teacherSignIn').hidden=false;localStorage.removeItem(KEY+'_firebase');cloudReady=false;cloud=null;if(authInstance)authAPI.signOut(authInstance);if(teacherUnsub)teacherUnsub();if(studentUnsub)studentUnsub();$('firebaseMessage').textContent='Отключено';$('syncStatus').textContent='Локальный режим — результаты только в этом браузере.'}async function connectFirebase(){let conf;try{conf=JSON.parse($('firebaseConfig').value);if(!conf.apiKey||!conf.databaseURL||!conf.projectId)throw Error('Нужны apiKey, databaseURL и projectId');localStorage.setItem(KEY+'_firebase',JSON.stringify(conf));$('firebaseMessage').textContent='Подключаемся…';await setupFirebase(conf)}catch(e){$('firebaseMessage').textContent='Ошибка: '+e.message}}let authAPI=null,authInstance=null,dbAPI=null,databaseInstance=null,teacherUnsub=null,studentUnsub=null;
+function details(n){if(!cloud?.isTeacher)return;openStudent=n;$('studentDetail').hidden=false;let r=records[n]?.answers||{};let q=teacherGroup();$('studentDetail').innerHTML='<h3>'+safe(records[n]?.name||'Ученик')+'</h3>'+q.map(x=>{let v=r[x.id];return `<p><b>${safe(x.id)}</b> — ${safe(localizedPrompt(x))}<br>${v?`Попыток: ${v.attempts.length}; ${v.correct?'✓ Решено ('+(v.points??1)+' балла)':'Не решено (0 баллов)'}<br>Ответы: ${v.attempts.map(z=>safe(z.answer)+(z.correct?' ✓':' ✕')).join(' → ')}`:'Не начинал(а)'}<br>${manualGradeControl(n,x)}</p>`}).join('')+'<h3>Прикреплённая работа</h3>'+filesHTML(n,$('teacherTopic').value,$('teacherGrade').value)}function download(name,data,type){let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([data],{type}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}function exportCSV(){let q=teacherGroup(),lines=[['Student','Class',...q.map(x=>x.id),'Correct','Total','Points','Percent','Files']];for(let n of Object.keys(records).filter(n=>records[n]?.grade===$('teacherGrade').value && (records[n].archived!==true || $('showArchived').checked))){let r=gradedRecord(n)?.answers||{};lines.push([records[n]?.name||n,records[n]?.grade||'',...q.map(x=>r[x.id]?.correct?'Correct':r[x.id]?.attempts?.length?'Incorrect':'Not started'),q.filter(x=>r[x.id]?.correct).length,q.length,pointsFor(gradedRecord(n),q),q.length?Math.round(pointsFor(gradedRecord(n),q)/q.length*100):0,workFiles(records[n],$('teacherTopic').value,$('teacherGrade').value).length])}download('math-results.csv','\ufeff'+lines.map(row=>row.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n'),'text/csv')}function exportJSON(){download('math-questions.json',JSON.stringify(questions,null,2),'application/json')}function addQuestion(){let grade=$('newGrade').value,topic=$('newTopic').value.trim(),prompt=$('newPrompt').value.trim(),answer=$('newAnswer').value.trim();if(!topic||!prompt||!answer){alert('Заполните тему, условие и ответ');return}questions.push({id:grade+'-'+Date.now(),grade,topic,prompt,answer});saveQuestions();refreshTopics();renderTeacher();alert('Задача добавлена')}async function importQuestions(input){let file=input.files[0];if(!file)return;try{let q=JSON.parse(await file.text());if(!Array.isArray(q)||!q.length||!q.every(x=>['10','11'].includes(String(x.grade))&&x.topic&&x.prompt&&x.answer))throw Error('Неверный формат');q=q.filter(x=>String(x.grade)==='11');if(!q.length)throw Error('В файле нет задач для 11 класса');let ids=new Set(questions.map(x=>x.id));let additions=q.map((x,i)=>({...x,grade:String(x.grade),id:x.id||x.grade+'-import-'+i})).filter(x=>!ids.has(x.id));if(!confirm('Добавить '+additions.length+' новых задач, сохранив существующие?'))return;questions.push(...additions);saveQuestions();refreshTopics();renderTeacher();alert('Импортировано '+q.length+' задач')}catch(e){alert('Ошибка импорта: '+e.message)}}function disconnectFirebase(){$('teacherSignIn').hidden=false;localStorage.removeItem(KEY+'_firebase');cloudReady=false;cloud=null;if(authInstance)authAPI.signOut(authInstance);if(teacherUnsub)teacherUnsub();if(studentUnsub)studentUnsub();$('firebaseMessage').textContent='Отключено';$('syncStatus').textContent='Локальный режим — результаты только в этом браузере.'}async function connectFirebase(){let conf;try{conf=JSON.parse($('firebaseConfig').value);if(!conf.apiKey||!conf.databaseURL||!conf.projectId)throw Error('Нужны apiKey, databaseURL и projectId');localStorage.setItem(KEY+'_firebase',JSON.stringify(conf));$('firebaseMessage').textContent='Подключаемся…';await setupFirebase(conf)}catch(e){$('firebaseMessage').textContent='Ошибка: '+e.message}}let authAPI=null,authInstance=null,dbAPI=null,databaseInstance=null,teacherUnsub=null,studentUnsub=null;
 let uploadingWork = false;
 const TEACHER_EMAIL='daiana.koptleuova@gmail.com';
 async function teacherLogin(){
