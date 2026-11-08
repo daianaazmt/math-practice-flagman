@@ -125,7 +125,7 @@ function watchManualGrades(){
 async function saveManualGrade(select){
  if(!cloud?.isTeacher||!dbAPI||!databaseInstance)return;
  const {uid,question}=select.dataset;
- if(!records[uid]||!teacherGroup().some(q=>q.id===question))return;
+ if(!records[uid]?.answers?.[question]?.attempts?.length||!teacherGroup().some(q=>q.id===question))return;
  const value=select.value;
  if(!['','0','0.5','1'].includes(value))return;
  select.disabled=true;
@@ -138,6 +138,7 @@ async function saveManualGrade(select){
 }
 function manualGradeControl(uid,q){
  if(!cloud?.isTeacher)return '';
+ if(!records[uid]?.answers?.[q.id]?.attempts?.length)return '';
  const value=manualGrades[uid]?.[manualKey(q.id)];
  return '<label>Ручная оценка <select data-uid="'+safe(uid)+'" data-question="'+safe(q.id)+'" onchange="saveManualGrade(this)">'+
  [['','Автопроверка'],['0','✕ 0'],['0.5','½ балла'],['1','✓ 1 балл']].map(([v,label])=>'<option value="'+v+'"'+(String(value??'')===v?' selected':'')+'>'+label+'</option>').join('')+'</select></label>';
