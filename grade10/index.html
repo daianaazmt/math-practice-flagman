@@ -26,7 +26,7 @@
 .math-keys button:hover{background:#d8edf7}
 .math-keys button:focus-visible,.math-tabs button:focus-visible{outline:2px solid #08789b;outline-offset:2px}
 .math-keys math{font-size:1.08em}
-</style></head><body><header><h1>📘 Math Practice <small class="muted">10 классы</small></h1></header><main class="wrap"><section id="student"><div class="panel flex"><label>Имя ученика <input id="studentName" type="text" placeholder="Имя и фамилия" maxlength="100" oninput="saveIdentity()"></label><label>Класс <select id="grade" onchange="refreshTopics()"><option value="10В">10В</option><option value="10Г">10Г</option><option value="10Д">10Д</option></select></label><select id="topic" aria-label="Текущая практика" hidden></select></div><div class="panel flex between"><div><b>Общее время, включая бонусы:</b> <span id="durationLabel">15 минут</span></div><div class="timerbox">⏱ <span id="practiceTimer">15:00</span></div></div><div class="grid"><aside class="panel"><h3>Ваш прогресс</h3><div id="score"></div><p class="muted">Обязательная часть рассчитана примерно на 20 минут. ★ — бонусные задания.</p><div id="chips" class="flex" style="margin-top:16px"></div><p class="muted">✓ верно · ✕ неверно · пусто — не начато. Верно за 1–3 попытки: 1 балл; позже: 0,5.</p></aside><article class="panel"><div class="flex between"><h2 id="number"></h2><strong id="practiceTitle" hidden></strong><span id="taskKind" class="task-kind"></span><span id="position" class="muted"></span></div><p id="instruction" class="muted">Введите точный ответ, например sqrt(5), pi/6 или 1/2.</p><div id="problem" class="problem"></div><label>Ответ</label><div class="flex"><input id="answer" type="text" placeholder="Введите ответ" onkeydown="if(event.key==='Enter')check()"><button onclick="check()">Проверить ответ</button></div><div class="keyboard" id="keyboard"></div><div id="feedback" class="status" aria-live="polite"></div><div class="flex"><button class="secondary" onclick="move(-1)">← Назад</button><button onclick="move(1)">Следующая →</button></div><p id="answerListHint" class="muted">Для нескольких решений вводите ответы через запятую. Порядок не важен.</p></article></div><div class="panel"><h2>Прикрепить решение</h2><label>Фото или документ <input id="workFileInput" type="file" accept=".pdf,.png,.jpg,.jpeg,.webp,.doc,.docx,.txt" onchange="uploadWork(this)"></label><p class="muted">До 5 файлов для каждой практики, каждый до 2 МБ. PDF, фото, Word или TXT.</p><p id="workUploadStatus" role="status"></p><div id="ownWorkFiles"></div></div></section><section id="teacher" class="hide">
+.answer-preview{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:10px;padding:8px 12px;background:#f3f9fb;border:1px solid #cce2ea;border-radius:9px;color:#16465f}.answer-preview[hidden]{display:none}.answer-preview span{font:600 .78rem system-ui,sans-serif}.answer-preview math{font-size:1.35rem}</style></head><body><header><h1>📘 Math Practice <small class="muted">10 классы</small></h1></header><main class="wrap"><section id="student"><div class="panel flex"><label>Имя ученика <input id="studentName" type="text" placeholder="Имя и фамилия" maxlength="100" oninput="saveIdentity()"></label><label>Класс <select id="grade" onchange="refreshTopics()"><option value="10В">10В</option><option value="10Г">10Г</option><option value="10Д">10Д</option></select></label><select id="topic" aria-label="Текущая практика" hidden></select></div><div class="panel flex between"><div><b>Общее время, включая бонусы:</b> <span id="durationLabel">15 минут</span></div><div class="timerbox">⏱ <span id="practiceTimer">15:00</span></div></div><div class="grid"><aside class="panel"><h3>Ваш прогресс</h3><div id="score"></div><p class="muted">Обязательная часть рассчитана примерно на 20 минут. ★ — бонусные задания.</p><div id="chips" class="flex" style="margin-top:16px"></div><p class="muted">✓ верно · ✕ неверно · пусто — не начато. Верно за 1–3 попытки: 1 балл; позже: 0,5.</p></aside><article class="panel"><div class="flex between"><h2 id="number"></h2><strong id="practiceTitle" hidden></strong><span id="taskKind" class="task-kind"></span><span id="position" class="muted"></span></div><p id="instruction" class="muted">Введите точный ответ, например sqrt(5), pi/6 или 1/2.</p><div id="problem" class="problem"></div><label>Ответ</label><div class="flex"><input id="answer" type="text" placeholder="Введите ответ" onkeydown="if(event.key==='Enter')check()"><button onclick="check()">Проверить ответ</button></div><div id="answerPreview" class="answer-preview" hidden><span>В математической записи</span><math id="answerMath"></math></div><div class="keyboard" id="keyboard"></div><div id="feedback" class="status" aria-live="polite"></div><div class="flex"><button class="secondary" onclick="move(-1)">← Назад</button><button onclick="move(1)">Следующая →</button></div><p id="answerListHint" class="muted">Для нескольких решений вводите ответы через запятую. Порядок не важен.</p></article></div><div class="panel"><h2>Прикрепить решение</h2><label>Фото или документ <input id="workFileInput" type="file" accept=".pdf,.png,.jpg,.jpeg,.webp,.doc,.docx,.txt" onchange="uploadWork(this)"></label><p class="muted">До 5 файлов для каждой практики, каждый до 2 МБ. PDF, фото, Word или TXT.</p><p id="workUploadStatus" role="status"></p><div id="ownWorkFiles"></div></div></section><section id="teacher" class="hide">
  <div class="panel">
   <div class="flex between teacher-heading"><h2>Результаты класса</h2><div class="flex">
    <button id="teacherSignIn" onclick="teacherLogin()">Войти через Google</button>
@@ -746,7 +746,7 @@ function renderStudentScore(items,answers,count){
  $('score').textContent=`Обязательные: ${score.correct}/${count} решено · ${score.points}/${count} баллов`
   +(items.length>count?` · Бонус: +${score.extra} баллов`:'');
 }
-function renderStudent(){renderOwnFiles();updatePracticeTimer();let a=group();if(!a.length){$('problem').textContent='Нет заданий';return}selected=Math.max(0,Math.min(selected,a.length-1));let q=a[selected],r=getRec(),required=requiredCount(a);$('taskKind').textContent=selected<required?'Обязательное':'★ Бонус';$('taskKind').classList.toggle('bonus-column',selected>=required);$('practiceTitle').hidden=!numberedCode(q.topic);$('practiceTitle').textContent=practiceLabel(q.topic);$('instruction').hidden=!!numberedCode(q.topic)&&q.topic!==IDENTITIES_TOPIC;$('number').hidden=!!numberedCode(q.topic);$('number').textContent=q.id;$('position').textContent=`${selected+1} / ${a.length}`;$('problem').textContent=q.prompt;$('answerListHint').hidden=!!q.format||/^10-W[567]L/.test(q.id);$('answer').value='';$('feedback').textContent='';renderStudentScore(a,r,required);renderChips()}function move(n){selected+=n;renderStudent()}function normalize(s){return String(s).trim().replace(/√\s*\(?([\w\d]+)\)?/g,'sqrt($1)').replace(/π/g,'pi').replace(/\s+/g,'').replace(/−/g,'-').replace(/²/g,'^2').replace(/×/g,'*')}function equivalent(a,b,tolerance=1e-8){a=normalize(a);b=normalize(b);if(a===b)return true;try{if(typeof math==='undefined')return false;let f=math.compile('('+a+')-('+b+')');return [0.2,0.7,1.3].every(x=>{let v=f.evaluate({x});return typeof v==='number'&&Number.isFinite(v)&&Math.abs(v)<tolerance})}catch(e){return false}}function equivalentExpression(input,answer,variables){
+function renderStudent(){renderOwnFiles();updatePracticeTimer();let a=group();if(!a.length){$('problem').textContent='Нет заданий';return}selected=Math.max(0,Math.min(selected,a.length-1));let q=a[selected],r=getRec(),required=requiredCount(a);$('taskKind').textContent=selected<required?'Обязательное':'★ Бонус';$('taskKind').classList.toggle('bonus-column',selected>=required);$('practiceTitle').hidden=!numberedCode(q.topic);$('practiceTitle').textContent=practiceLabel(q.topic);$('instruction').hidden=!!numberedCode(q.topic)&&q.topic!==IDENTITIES_TOPIC;$('number').hidden=!!numberedCode(q.topic);$('number').textContent=q.id;$('position').textContent=`${selected+1} / ${a.length}`;$('problem').textContent=q.prompt;$('answerListHint').hidden=!!q.format||/^10-W[567]L/.test(q.id);$('answer').value='';renderAnswerPreview();$('feedback').textContent='';renderStudentScore(a,r,required);renderChips()}function move(n){selected+=n;renderStudent()}function normalize(s){return String(s).trim().replace(/√\s*\(?([\w\d]+)\)?/g,'sqrt($1)').replace(/π/g,'pi').replace(/\s+/g,'').replace(/−/g,'-').replace(/²/g,'^2').replace(/×/g,'*')}function equivalent(a,b,tolerance=1e-8){a=normalize(a);b=normalize(b);if(a===b)return true;try{if(typeof math==='undefined')return false;let f=math.compile('('+a+')-('+b+')');return [0.2,0.7,1.3].every(x=>{let v=f.evaluate({x});return typeof v==='number'&&Number.isFinite(v)&&Math.abs(v)<tolerance})}catch(e){return false}}function equivalentExpression(input,answer,variables){
  try {
   const actual=math.compile(normalize(input).replaceAll('³','^3').replaceAll('⁴','^4').replaceAll('⁵','^5'));
   const expected=math.compile(answer);
@@ -794,7 +794,39 @@ function renderChips(){
  const answers=getRec(),items=group(),count=requiredCount(items);
  $('chips').innerHTML=items.map((q,i)=>`<button class="chip ${i===selected?'active':''} ${i>=count?'bonus':''} ${answers[q.id]?.correct?'ok':answers[q.id]?.attempts?.length?'bad':''}" title="${i>=count?'Бонусное':'Обязательное'} задание" onclick="selected=${i};renderStudent()">${i>=count?'★ ':''}${i+1}</button>`).join('');
 }
+function renderAnswerPreview(){
+ const preview=$('answerPreview'),value=$('answer').value.trim();
+ preview.hidden=true;
+ if(!value||typeof math==='undefined')return;
+ const row=content=>'<mrow>'+content+'</mrow>';
+ function render(node){
+  if(node.isConstantNode&&typeof node.value==='number')return '<mn>'+safe(node.value)+'</mn>';
+  if(node.isSymbolNode)return '<mi>'+safe(node.name==='pi'?'π':node.name)+'</mi>';
+  if(node.isParenthesisNode)return row('<mo>(</mo>'+render(node.content)+'<mo>)</mo>');
+  if(node.isOperatorNode){
+   const args=node.args.map(render);
+   const operand=i=>render(node.args[i].isParenthesisNode?node.args[i].content:node.args[i]);
+   if(node.op==='/')return '<mfrac>'+row(operand(0))+row(operand(1))+'</mfrac>';
+   if(node.op==='^')return '<msup>'+row(operand(0))+row(operand(1))+'</msup>';
+   const symbol={'*':node.implicit?'':'·','-':'−'}[node.op]??node.op;
+   const op='<mo>'+safe(symbol)+'</mo>';
+   return row(args.length===1?op+args[0]:args.join(op));
+  }
+  if(node.isFunctionNode&&node.args.length===1){
+   const arg=render(node.args[0]),name=node.fn.name;
+   if(name==='sqrt')return '<msqrt>'+arg+'</msqrt>';
+   if(name==='abs')return row('<mo>|</mo>'+arg+'<mo>|</mo>');
+   return row('<mi>'+safe(name==='log'?'ln':name)+'</mi><mo>(</mo>'+arg+'<mo>)</mo>');
+  }
+  throw Error('Unsupported notation');
+ }
+ try{
+  $('answerMath').innerHTML=value.split(',').map(part=>render(math.parse(normalize(part)))).join('<mo>,</mo>');
+  preview.hidden=false;
+ }catch{}
+}
 function keyboard(){
+ $('answer').addEventListener('input',renderAnswerPreview);
  const sets=[
   ['Основные',[
    ['+','+'],['−','-'],['×','*'],['÷','/'],['=','='],['≠','≠'],
@@ -841,7 +873,7 @@ function keyboard(){
     const inserted=before+selection+after;
     answer.setRangeText(inserted,start,end,'end');
     const cursor=start+(selection||!after?inserted.length:before.length);
-    answer.focus();answer.setSelectionRange(cursor,cursor);
+    answer.focus();answer.setSelectionRange(cursor,cursor);renderAnswerPreview();
    };
    return button;
   }));
