@@ -703,6 +703,7 @@ function saveIdentity(){
  if(record?.name&&!sameStudent(record))$('feedback').textContent='В этом браузере есть работа другого ученика. Нажмите «Новый ученик», чтобы начать свою.';
 }function group(){return questions.filter(q=>q.grade===gradeLevel($('grade').value)&&q.topic===$('topic').value)}function gradeLevel(c){return String(c).slice(0,2)}
 let classAssignments={};function refreshTopics(){localStorage.setItem(KEY+'_class',$('grade').value);let t=[...new Set(questions.filter(q=>q.grade===gradeLevel($('grade').value)).map(q=>q.topic))];$('topic').innerHTML=t.map(x=>`<option>${safe(x)}</option>`).join('');let requested=new URLSearchParams(location.search).get('practice');let assigned=classAssignments[$('grade').value];const direct=NUMBERED_TOPICS.get(requested==='2.1'?'2.2.1':requested);if(direct&&t.includes(direct))$('topic').value=direct;else if(assigned&&t.includes(assigned))$('topic').value=assigned;else if(requested==='2'&&t.includes("Practice 2 — Quadratic Trigonometric Equations"))$('topic').value="Practice 2 — Quadratic Trigonometric Equations";else if(t.includes("Practice 1 — Trigonometric Equations Reducible to Quadratics"))$('topic').value="Practice 1 — Trigonometric Equations Reducible to Quadratics";startTopic()}function startTopic(){selected=0;renderStudent()}function getRec(){let rec=records[cloud?.uid||'local'];return sameStudent(rec)&&rec?.grade===$('grade').value?rec.answers||{}:{}}const REQUIRED_BUDGET_SECONDS=20*60;
+const STUDENT_PACE_MULTIPLIER=3;
 function estimatedSeconds(question){
  if(Number.isFinite(question.estimatedSeconds)&&question.estimatedSeconds>0)return question.estimatedSeconds;
  if(question.format==='pairs')return 180;
@@ -719,7 +720,7 @@ function estimatedSeconds(question){
 function requiredCount(items){
  let seconds=0,count=0;
  for(const item of items){
-  seconds+=estimatedSeconds(item);
+  seconds+=estimatedSeconds(item)/STUDENT_PACE_MULTIPLIER;
   if(count&&seconds>REQUIRED_BUDGET_SECONDS)break;
   count++;
  }
