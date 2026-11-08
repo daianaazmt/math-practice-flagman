@@ -885,7 +885,49 @@ function toggleArchivedResults(){$('studentDetail').hidden=true;
  renderTeacher();
 }
 
+let manualGrades={},manualGradeSource=null,openStudent=null;
+function manualKey(id){return encodeURIComponent(id).replaceAll('.','%2E')}
+function gradedRecord(uid){
+ const record=records[uid],manual=manualGrades[uid];
+ if(!record||!manual)return record;
+ const answers={...record.answers};
+ for(const q of teacherGroup()){
+  const points=manual[manualKey(q.id)];
+  if([0,0.5,1].includes(points))answers[q.id]={...answers[q.id],points,correct:points>0,manual:true};
+ }
+ return {...record,answers};
+}
+function watchManualGrades(){
+ if(!cloud?.isTeacher||!databaseInstance||manualGradeSource===databaseInstance)return;
+ manualGradeSource=databaseInstance;
+ dbAPI.onValue(dbAPI.ref(databaseInstance,'math-practice-demo/teacherGrades/10'),snapshot=>{
+  manualGrades=snapshot.val()||{};
+  renderTeacher();
+  if(openStudent&&!$('studentDetail').hidden)details(openStudent);
+ },error=>{$('firebaseMessage').textContent='Ручные оценки: '+error.message;});
+}
+async function saveManualGrade(select){
+ if(!cloud?.isTeacher||!dbAPI||!databaseInstance)return;
+ const {uid,question}=select.dataset;
+ if(!records[uid]||!teacherGroup().some(q=>q.id===question))return;
+ const value=select.value;
+ if(!['','0','0.5','1'].includes(value))return;
+ select.disabled=true;
+ try{
+  await dbAPI.set(dbAPI.ref(databaseInstance,'math-practice-demo/teacherGrades/10/'+uid+'/'+manualKey(question)),value===''?null:Number(value));
+ }catch(error){
+  $('firebaseMessage').textContent='Не удалось сохранить оценку: '+error.message;
+  if(openStudent&&!$('studentDetail').hidden)details(openStudent);
+ }finally{select.disabled=false;}
+}
+function manualGradeControl(uid,q){
+ if(!cloud?.isTeacher)return '';
+ const value=manualGrades[uid]?.[manualKey(q.id)];
+ return '<label>Ручная оценка <select data-uid="'+safe(uid)+'" data-question="'+safe(q.id)+'" onchange="saveManualGrade(this)">'+
+ [['','Автопроверка'],['0','✕ 0'],['0.5','½ балла'],['1','✓ 1 балл']].map(([v,label])=>'<option value="'+v+'"'+(String(value??'')===v?' selected':'')+'>'+label+'</option>').join('')+'</select></label>';
+}
 function renderTeacher() {
+ watchManualGrades();
  $('teacherSignIn').hidden=!!cloud?.isTeacher;
 
  teacherTopics();
@@ -897,32 +939,33 @@ function renderTeacher() {
  const scores = new Map();
  const ids = Object.keys(records).filter(uid => {
   const record = records[uid];
-  return matchesTeacherResults(record) && (questions.some(q => record.answers?.[q.id]) || workFiles(record, topic, klass).length > 0);
+  return matchesTeacherResults(record) && (questions.some(q => gradedRecord(uid).answers?.[q.id]) || workFiles(record, topic, klass).length > 0);
  });
- for(const uid of ids)scores.set(uid,practiceScore(records[uid],questions,count));
+ for(const uid of ids)scores.set(uid,practiceScore(gradedRecord(uid),questions,count));
  ids.sort((a, b) => scores.get(b).points - scores.get(a).points || scores.get(b).extra - scores.get(a).extra || (records[a].name || '').localeCompare(records[b].name || ''));
  $('summary').textContent = ids.length + ' учеников с результатами · ' + count + ' обязательных · ' + (questions.length-count) + ' бонусных';
  let html = '<table><thead><tr><th>Ученик</th><th>Оценка, %</th><th>Баллы ↓</th><th class="bonus-column">Бонусные баллы</th>';
  html += questions.map((question, index) => '<th class="' + (index>=count?'bonus-column':'') + '" title="' + safe((index>=count?'Бонус — ':'Обязательное — ') + question.prompt) + '">' + (index>=count?'★ ':'') + (index + 1) + '</th>').join('');
  html += '<th>Файлы</th></tr></thead><tbody>';
  for (const uid of ids) {
-  const record = records[uid], answers = record.answers || {}, score = scores.get(uid);
+  const record = gradedRecord(uid), answers = record.answers || {}, score = scores.get(uid);
   const argument = safe(JSON.stringify(uid));
   html += '<tr><td><button class="secondary" onclick="details(' + argument + ')">' + safe(record.name || 'Ученик') + '</button></td>';
   html += '<td>' + score.percent + '% <span class="bonus-score">+' + score.bonusPercent + ' п.п.</span></td><td>' + score.points + ' / ' + count + '</td><td class="bonus-score">+' + score.extra + '</td>';
   html += questions.map((question,index) => {
    const answer = answers[question.id];
+   if(answer?.manual)return '<td title="Ручная оценка" style="color:#08789b">'+(answer.points===1?'✓':answer.points===0.5?'½':'✕')+' ✎</td>';
    return '<td class="' + (index>=count?'bonus-column':'') + '" style="color:' + (answer?.correct ? 'green' : answer?.attempts?.length ? '#b33' : '#999') + '">' + (answer?.correct ? '✓' : answer?.attempts?.length ? '✕' : '···') + '</td>';
   }).join('');
   html += '<td>' + filesHTML(uid, topic, klass) + '</td></tr>';
  }
  $('teacherTable').innerHTML = html + '</tbody></table>';
 }
-function details(n){$('studentDetail').hidden=false;let r=records[n]?.answers||{};let q=teacherGroup(),count=requiredCount(q);$('studentDetail').innerHTML='<h3>'+safe(records[n]?.name||'Ученик')+'</h3>'+q.map((x,i)=>{let v=r[x.id];return `<p><b>${i>=count?'★ Бонус · ':''}${safe(x.id)}</b> — ${safe(x.prompt)}<br>${v?`Попыток: ${v.attempts.length}; ${v.correct?'✓ Решено ('+(v.points??1)+' балла)':'Не решено (0 баллов)'}<br>Ответы: ${v.attempts.map(z=>safe(z.answer)+(z.correct?' ✓':' ✕')).join(' → ')}`:'Не начинал(а)'}</p>`}).join('')+'<h3>Прикреплённая работа</h3>'+filesHTML(n,$('teacherTopic').value,$('teacherGrade').value)}function download(name,data,type){let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([data],{type}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}function exportCSV(){
+function details(n){if(!cloud?.isTeacher)return;openStudent=n;$('studentDetail').hidden=false;let r=records[n]?.answers||{};let q=teacherGroup(),count=requiredCount(q);$('studentDetail').innerHTML='<h3>'+safe(records[n]?.name||'Ученик')+'</h3>'+q.map((x,i)=>{let v=r[x.id];return `<p><b>${i>=count?'★ Бонус · ':''}${safe(x.id)}</b> — ${safe(x.prompt)}<br>${v?`Попыток: ${v.attempts.length}; ${v.correct?'✓ Решено ('+(v.points??1)+' балла)':'Не решено (0 баллов)'}<br>Ответы: ${v.attempts.map(z=>safe(z.answer)+(z.correct?' ✓':' ✕')).join(' → ')}`:'Не начинал(а)'}<br>${manualGradeControl(n,x)}</p>`}).join('')+'<h3>Прикреплённая работа</h3>'+filesHTML(n,$('teacherTopic').value,$('teacherGrade').value)}function download(name,data,type){let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([data],{type}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}function exportCSV(){
  const items=teacherGroup(),count=requiredCount(items);
  const lines=[['Student','Class',...items.map((q,i)=>(i>=count?'Bonus: ':'Required: ')+q.id),'Required correct','Required total','Required points','Required percent','Bonus points','Bonus percentage points','Files']];
  for(const uid of Object.keys(records).filter(uid=>matchesTeacherResults(records[uid]))){
-  const record=records[uid],answers=record.answers||{},score=practiceScore(record,items,count);
+  const record=gradedRecord(uid),answers=record.answers||{},score=practiceScore(record,items,count);
   lines.push([record.name||uid,record.grade||'',...items.map(q=>answers[q.id]?.correct?'Correct':answers[q.id]?.attempts?.length?'Incorrect':'Not started'),score.correct,count,score.points,score.percent,score.extra,score.bonusPercent,workFiles(record,$('teacherTopic').value,$('teacherGrade').value).length]);
  }
  download('math-results.csv','\ufeff'+lines.map(row=>row.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n'),'text/csv');
