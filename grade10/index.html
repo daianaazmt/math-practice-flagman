@@ -26,7 +26,7 @@
 .math-keys button:hover{background:#d8edf7}
 .math-keys button:focus-visible,.math-tabs button:focus-visible{outline:2px solid #08789b;outline-offset:2px}
 .math-keys math{font-size:1.08em}
-.answer-preview{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:10px;padding:8px 12px;background:#f3f9fb;border:1px solid #cce2ea;border-radius:9px;color:#16465f}.answer-preview[hidden]{display:none}.answer-preview span{font:600 .78rem system-ui,sans-serif}.answer-preview math{font-size:1.35rem}.problem math{font-size:1em;color:inherit}.problem-hint{margin:-12px 8px 16px;color:#476778;font-size:14px;line-height:1.5;text-align:center;white-space:pre-line}.problem-hint[hidden]{display:none}</style></head><body><header><h1>📘 Math Practice <small class="muted">10 классы</small></h1></header><main class="wrap"><section id="student"><div class="panel flex"><label>Имя ученика <input id="studentName" type="text" placeholder="Имя и фамилия" maxlength="100" oninput="saveIdentity()"></label><label>Класс <select id="grade" onchange="refreshTopics()"><option value="10В">10В</option><option value="10Г">10Г</option><option value="10Д">10Д</option></select></label><select id="topic" aria-label="Текущая практика" hidden></select></div><div class="panel flex between"><div><b>Общее время, включая бонусы:</b> <span id="durationLabel">20 минут</span></div><div class="timerbox">⏱ <span id="practiceTimer">20:00</span></div></div><div class="grid"><aside class="panel"><h3>Ваш прогресс</h3><div id="score"></div><p class="muted">Обязательная часть рассчитана примерно на 20 минут. ★ — бонусные задания.</p><div id="chips" class="flex" style="margin-top:16px"></div><p class="muted">✓ верно · ✕ неверно · пусто — не начато. Верно за 1–3 попытки: 1 балл; позже: 0,5.</p></aside><article class="panel"><div class="flex between"><h2 id="number"></h2><strong id="practiceTitle" hidden></strong><span id="taskKind" class="task-kind"></span><span id="position" class="muted"></span></div><p id="instruction" class="muted">Введите точный ответ, например sqrt(5), pi/6 или 1/2.</p><div id="problem" class="problem"></div><p id="problemHint" class="problem-hint" hidden></p><label>Ответ</label><div class="flex"><input id="answer" type="text" placeholder="Введите ответ" onkeydown="if(event.key==='Enter')check()"><button onclick="check()">Проверить ответ</button></div><div id="answerPreview" class="answer-preview" hidden><span>В математической записи</span><math id="answerMath"></math></div><div class="keyboard" id="keyboard"></div><div id="feedback" class="status" aria-live="polite"></div><div class="flex"><button class="secondary" onclick="move(-1)">← Назад</button><button onclick="move(1)">Следующая →</button></div><p id="answerListHint" class="muted">Для нескольких решений вводите ответы через запятую. Порядок не важен.</p></article></div><div class="panel"><h2>Прикрепить решение</h2><label>Фото или документ <input id="workFileInput" type="file" accept=".pdf,.png,.jpg,.jpeg,.webp,.doc,.docx,.txt" onchange="uploadWork(this)"></label><p class="muted">До 5 файлов для каждой практики, каждый до 2 МБ. PDF, фото, Word или TXT.</p><p id="workUploadStatus" role="status"></p><div id="ownWorkFiles"></div></div></section><section id="teacher" class="hide">
+.answer-preview{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:10px;padding:8px 12px;background:#f3f9fb;border:1px solid #cce2ea;border-radius:9px;color:#16465f}.answer-preview[hidden]{display:none}.answer-preview span{font:600 .78rem system-ui,sans-serif}.answer-preview math{font-size:1.35rem}.problem math{font-size:1em;color:inherit}.problem-hint{margin:-12px 8px 16px;color:#476778;font-size:14px;line-height:1.5;text-align:center;white-space:pre-line}.problem-hint[hidden]{display:none}#assignedWork[hidden],#assignmentWait[hidden]{display:none!important}</style></head><body><header><h1>📘 Math Practice <small class="muted">10 классы</small></h1></header><main class="wrap"><section id="student"><div class="panel flex"><label>Имя ученика <input id="studentName" type="text" placeholder="Имя и фамилия" maxlength="100" oninput="saveIdentity()"></label><label>Класс <select id="grade" onchange="refreshTopics()"><option value="10В">10В</option><option value="10Г">10Г</option><option value="10Д">10Д</option></select></label><select id="topic" aria-label="Текущая практика" hidden></select></div><div id="assignmentWait" class="panel" role="status">Ожидаем назначения практики учителем.</div><div id="assignedWork" hidden><div class="panel flex between"><div><b>Общее время, включая бонусы:</b> <span id="durationLabel">20 минут</span></div><div class="timerbox">⏱ <span id="practiceTimer">20:00</span></div></div><div class="grid"><aside class="panel"><h3>Ваш прогресс</h3><div id="score"></div><p class="muted">Обязательная часть рассчитана примерно на 20 минут. ★ — бонусные задания.</p><div id="chips" class="flex" style="margin-top:16px"></div><p class="muted">✓ верно · ✕ неверно · пусто — не начато. Верно за 1–3 попытки: 1 балл; позже: 0,5.</p></aside><article class="panel"><div class="flex between"><h2 id="number"></h2><strong id="practiceTitle" hidden></strong><span id="taskKind" class="task-kind"></span><span id="position" class="muted"></span></div><p id="instruction" class="muted">Введите точный ответ, например sqrt(5), pi/6 или 1/2.</p><div id="problem" class="problem"></div><p id="problemHint" class="problem-hint" hidden></p><label>Ответ</label><div class="flex"><input id="answer" type="text" placeholder="Введите ответ" onkeydown="if(event.key==='Enter')check()"><button onclick="check()">Проверить ответ</button></div><div id="answerPreview" class="answer-preview" hidden><span>В математической записи</span><math id="answerMath"></math></div><div class="keyboard" id="keyboard"></div><div id="feedback" class="status" aria-live="polite"></div><div class="flex"><button class="secondary" onclick="move(-1)">← Назад</button><button onclick="move(1)">Следующая →</button></div><p id="answerListHint" class="muted">Для нескольких решений вводите ответы через запятую. Порядок не важен.</p></article></div><div class="panel"><h2>Прикрепить решение</h2><label>Фото или документ <input id="workFileInput" type="file" accept=".pdf,.png,.jpg,.jpeg,.webp,.doc,.docx,.txt" onchange="uploadWork(this)"></label><p class="muted">До 5 файлов для каждой практики, каждый до 2 МБ. PDF, фото, Word или TXT.</p><p id="workUploadStatus" role="status"></p><div id="ownWorkFiles"></div></div></div></section><section id="teacher" class="hide">
  <div class="panel">
   <div class="flex between teacher-heading"><h2>Результаты класса</h2><div class="flex">
    <button id="teacherSignIn" onclick="teacherLogin()">Войти через Google</button>
@@ -711,7 +711,24 @@ function saveIdentity(){
  const record=records[cloud?.uid];
  if(record?.name&&!sameStudent(record)&&$('studentName').value.trim())$('feedback').textContent='Ответы под этим именем будут сохранены отдельно.';
 }function group(){return questions.filter(q=>q.grade===gradeLevel($('grade').value)&&q.topic===$('topic').value)}function gradeLevel(c){return String(c).slice(0,2)}
-let classAssignments={};function refreshTopics(){localStorage.setItem(KEY+'_class',$('grade').value);let t=[...new Set(questions.filter(q=>q.grade===gradeLevel($('grade').value)).map(q=>q.topic))];$('topic').innerHTML=t.map(x=>`<option>${safe(x)}</option>`).join('');let requested=new URLSearchParams(location.search).get('practice');let assigned=classAssignments[$('grade').value];const direct=NUMBERED_TOPICS.get(requested==='2.1'?'2.2.1':requested);if(direct&&t.includes(direct))$('topic').value=direct;else if(assigned&&t.includes(assigned))$('topic').value=assigned;else if(requested==='2'&&t.includes("Practice 2 — Quadratic Trigonometric Equations"))$('topic').value="Practice 2 — Quadratic Trigonometric Equations";else if(t.includes("Practice 1 — Trigonometric Equations Reducible to Quadratics"))$('topic').value="Practice 1 — Trigonometric Equations Reducible to Quadratics";startTopic()}function startTopic(){selected=0;renderStudent()}function getRec(){let rec=records[cloud?.uid||'local'];return sameStudent(rec)&&rec?.grade===$('grade').value?rec.answers||{}:{}}const REQUIRED_BUDGET_SECONDS=20*60;
+let classAssignments={},assignmentsReady=false;
+function assignmentOpen(){
+ return cloudReady&&assignmentsReady&&!cloud?.isTeacher&&!!$('topic').value&&classAssignments[$('grade').value]===$('topic').value&&!!$('studentName').value.trim();
+}
+function refreshTopics(){
+ const grade=$('grade').value;
+ localStorage.setItem(KEY+'_class',grade);
+ const assigned=classAssignments[grade];
+ const request=new URLSearchParams(location.search).get('practice');
+ const direct=NUMBERED_TOPICS.get(request==='2.1'?'2.2.1':request)||
+  (request==='1'?'Practice 1 — Trigonometric Equations Reducible to Quadratics':request==='2'?'Practice 2 — Quadratic Trigonometric Equations':null);
+ const available=assignmentsReady&&assigned&&(!request||direct===assigned)&&questions.some(q=>q.grade===gradeLevel(grade)&&q.topic===assigned);
+ const topic=$('topic'),previous=topic.value;
+ topic.replaceChildren();
+ if(available)topic.add(new Option(assigned,assigned));
+ if(previous!==topic.value)startTopic();else renderStudent();
+}
+function startTopic(){selected=0;renderStudent()}function getRec(){let rec=records[cloud?.uid||'local'];return sameStudent(rec)&&rec?.grade===$('grade').value?rec.answers||{}:{}}const REQUIRED_BUDGET_SECONDS=20*60;
 const STUDENT_PACE_MULTIPLIER=3;
 function estimatedSeconds(question){
  if(Number.isFinite(question.estimatedSeconds)&&question.estimatedSeconds>0)return question.estimatedSeconds;
@@ -746,7 +763,18 @@ function renderStudentScore(items,answers,count){
  $('score').textContent=`Обязательные: ${score.correct}/${count} решено · ${score.points}/${count} баллов`
   +(items.length>count?` · Бонус: +${score.extra} баллов`:'');
 }
-function renderStudent(){renderOwnFiles();updatePracticeTimer();let a=group();if(!a.length){renderProblem('Нет заданий');return}selected=Math.max(0,Math.min(selected,a.length-1));let q=a[selected],r=getRec(),required=requiredCount(a);$('taskKind').textContent=selected<required?'Обязательное':'★ Бонус';$('taskKind').classList.toggle('bonus-column',selected>=required);$('practiceTitle').hidden=!numberedCode(q.topic);$('practiceTitle').textContent=practiceLabel(q.topic);$('instruction').hidden=!!numberedCode(q.topic)&&q.topic!==IDENTITIES_TOPIC;$('number').hidden=!!numberedCode(q.topic);$('number').textContent=q.id;$('position').textContent=`${selected+1} / ${a.length}`;renderProblem(q.prompt);$('answerListHint').hidden=!!q.format||/^10-W[567]L/.test(q.id);$('answer').value='';renderAnswerPreview();$('feedback').textContent='';renderStudentScore(a,r,required);renderChips()}function move(n){selected+=n;renderStudent()}function normalize(s){return String(s).trim().replace(/√\s*\(?([\w\d]+)\)?/g,'sqrt($1)').replace(/π/g,'pi').replace(/\s+/g,'').replace(/−/g,'-').replace(/²/g,'^2').replace(/×/g,'*')}function equivalent(a,b,tolerance=1e-8){a=normalize(a);b=normalize(b);if(a===b)return true;try{if(typeof math==='undefined')return false;let f=math.compile('('+a+')-('+b+')');return [0.2,0.7,1.3].every(x=>{let v=f.evaluate({x});return typeof v==='number'&&Number.isFinite(v)&&Math.abs(v)<tolerance})}catch(e){return false}}function equivalentExpression(input,answer,variables){
+function renderStudent(){
+ const open=assignmentOpen(),wait=$('assignmentWait');
+ $('assignedWork').hidden=!open;
+ wait.hidden=open;
+ if(!open){
+  const grade=$('grade').value;
+  wait.textContent=!cloudReady||!assignmentsReady?'Подключаемся к расписанию практик…':
+   !$('topic').value?(classAssignments[grade]?'Эта практика пока не открыта для '+grade+'. Дождитесь ссылки на назначенную работу.':'Учитель ещё не назначил практику для '+grade+'. Страница обновится автоматически.'):
+   'Введите имя и фамилию, чтобы начать назначенную практику.';
+  return;
+ }
+ renderOwnFiles();updatePracticeTimer();let a=group();if(!a.length){renderProblem('Нет заданий');return}selected=Math.max(0,Math.min(selected,a.length-1));let q=a[selected],r=getRec(),required=requiredCount(a);$('taskKind').textContent=selected<required?'Обязательное':'★ Бонус';$('taskKind').classList.toggle('bonus-column',selected>=required);$('practiceTitle').hidden=!numberedCode(q.topic);$('practiceTitle').textContent=practiceLabel(q.topic);$('instruction').hidden=!!numberedCode(q.topic)&&q.topic!==IDENTITIES_TOPIC;$('number').hidden=!!numberedCode(q.topic);$('number').textContent=q.id;$('position').textContent=`${selected+1} / ${a.length}`;renderProblem(q.prompt);$('answerListHint').hidden=!!q.format||/^10-W[567]L/.test(q.id);$('answer').value='';renderAnswerPreview();$('feedback').textContent='';renderStudentScore(a,r,required);renderChips()}function move(n){selected+=n;renderStudent()}function normalize(s){return String(s).trim().replace(/√\s*\(?([\w\d]+)\)?/g,'sqrt($1)').replace(/π/g,'pi').replace(/\s+/g,'').replace(/−/g,'-').replace(/²/g,'^2').replace(/×/g,'*')}function equivalent(a,b,tolerance=1e-8){a=normalize(a);b=normalize(b);if(a===b)return true;try{if(typeof math==='undefined')return false;let f=math.compile('('+a+')-('+b+')');return [0.2,0.7,1.3].every(x=>{let v=f.evaluate({x});return typeof v==='number'&&Number.isFinite(v)&&Math.abs(v)<tolerance})}catch(e){return false}}function equivalentExpression(input,answer,variables){
  try {
   const actual=math.compile(normalize(input).replaceAll('³','^3').replaceAll('⁴','^4').replaceAll('⁵','^5'));
   const expected=math.compile(answer);
@@ -780,13 +808,13 @@ return a.every(([type,...values])=>{
  return true;
 });
 }async function check(){
- if(uploadingWork||switchingStudent)return;
+ if(uploadingWork||switchingStudent||!assignmentOpen())return;
  const name=$('studentName').value.trim(),grade=$('grade').value,q=group()[selected],input=$('answer').value.trim();
  if(!q||!input)return;
  let uid;
  try{uid=await ensureStudentSession(name,grade);}
  catch(e){$('feedback').textContent=e.message;return;}
- if(name!==$('studentName').value.trim()||grade!==$('grade').value||q!==group()[selected])return;
+ if(name!==$('studentName').value.trim()||grade!==$('grade').value||q!==group()[selected]||!assignmentOpen())return;
  if(currentTimer().remaining<=0){updatePracticeTimer();return;}
  const correct=isCorrect(input,q.answer,numberedCode(q.topic)&&q.topic!==IDENTITIES_TOPIC?5.01e-7:1e-8,q.format,q.variables);
  records[uid]??={name,grade:$('grade').value,answers:{}};if(records[uid].grade!==$('grade').value){records[uid].answers={}}records[uid].name=name;records[uid].grade=$('grade').value;records[uid].answers??={};records[uid].answers[q.id]??={attempts:[],correct:false};records[uid].answers[q.id].attempts.push({answer:input,correct,time:new Date().toISOString()});if(correct&&!records[uid].answers[q.id].correct){records[uid].answers[q.id].points=records[uid].answers[q.id].attempts.length<=3?1:0.5}records[uid].answers[q.id].correct ||=correct;store();$('feedback').className='status '+(correct?'green':'red');$('feedback').textContent=correct?'✓ Правильно!':'✕ Пока неверно. Попробуйте ещё раз.';const items=group();renderStudentScore(items,records[uid].answers,requiredCount(items));renderChips()}
@@ -906,8 +934,8 @@ function keyboard(){
  }
  showKeys(0);
 }
-const TIMER_KEY='flagman_practice_timer_v1';let timerHandle=null;function timerTopicKey(){return gradeLevel($('grade').value)+'|'+$('topic').value}let practiceDurations={};
-function durationFor(grade,topic){return Math.max(1,Math.min(180,Number(practiceDurations[durationKey(topic)])||20))}function currentTimer(){const minutes=durationFor(gradeLevel($('grade').value),$('topic').value);const record=records[cloud?.uid];if(!$('studentName').value.trim()||(record?.name&&(!sameStudent(record)||record.grade!==$('grade').value)))return {remaining:minutes*60000,minutes};let key=TIMER_KEY+'|'+(cloud?.uid||'local')+'|'+$('grade').value+'|'+timerTopicKey();let data;try{data=JSON.parse(localStorage.getItem(key))}catch(e){}if(!data||!Number.isFinite(data.started)){data={started:Date.now()};localStorage.setItem(key,JSON.stringify(data))}return {remaining:Math.max(0,minutes*60000-(Date.now()-data.started)),minutes}}function updatePracticeTimer(){if(!$('topic').value)return;let t=currentTimer();$('durationLabel').textContent=t.minutes+' минут';let seconds=Math.ceil(t.remaining/1000);$('practiceTimer').textContent=String(Math.floor(seconds/60)).padStart(2,'0')+':'+String(seconds%60).padStart(2,'0');$('practiceTimer').classList.toggle('expired',seconds===0);let answer=$('answer'),submit=answer?.nextElementSibling;if(answer)answer.disabled=seconds===0;if(submit&&submit.tagName==='BUTTON')submit.disabled=seconds===0;if(seconds===0&&$('feedback'))$('feedback').textContent='Время вышло. Ваши результаты сохранены.'}async function assignPractice(){if(!cloudReady||!cloud?.isTeacher||!dbAPI||!databaseInstance){alert('Для назначения практики войдите через Google в подключённом Firebase.');return}let klass=$('teacherGrade').value,topic=$('teacherTopic').value;if(!topic)return;try{await dbAPI.set(dbAPI.ref(databaseInstance,'math-practice-demo/grade10Assignments/'+klass),topic);classAssignments[klass]=topic;renderTeacher();alert('Назначено для '+klass+': '+practiceLabel(topic))}catch(e){alert('Firebase не разрешил назначение: '+e.message+'; проверьте правила доступа базы.')}}async function setPracticeDuration(){
+const TIMER_KEY='flagman_assigned_practice_timer_v2';let timerHandle=null;function timerTopicKey(){return gradeLevel($('grade').value)+'|'+$('topic').value}let practiceDurations={};
+function durationFor(grade,topic){return Math.max(1,Math.min(180,Number(practiceDurations[durationKey(topic)])||20))}function currentTimer(){const minutes=durationFor(gradeLevel($('grade').value),$('topic').value);const record=records[cloud?.uid];if(!$('studentName').value.trim()||(record?.name&&(!sameStudent(record)||record.grade!==$('grade').value)))return {remaining:minutes*60000,minutes};let key=TIMER_KEY+'|'+(cloud?.uid||'local')+'|'+$('grade').value+'|'+timerTopicKey();let data;try{data=JSON.parse(localStorage.getItem(key))}catch(e){}if(!data||!Number.isFinite(data.started)){data={started:Date.now()};localStorage.setItem(key,JSON.stringify(data))}return {remaining:Math.max(0,minutes*60000-(Date.now()-data.started)),minutes}}function updatePracticeTimer(){if(!assignmentOpen())return;let t=currentTimer();$('durationLabel').textContent=t.minutes+' минут';let seconds=Math.ceil(t.remaining/1000);$('practiceTimer').textContent=String(Math.floor(seconds/60)).padStart(2,'0')+':'+String(seconds%60).padStart(2,'0');$('practiceTimer').classList.toggle('expired',seconds===0);let answer=$('answer'),submit=answer?.nextElementSibling;if(answer)answer.disabled=seconds===0;if(submit&&submit.tagName==='BUTTON')submit.disabled=seconds===0;if(seconds===0&&$('feedback'))$('feedback').textContent='Время вышло. Ваши результаты сохранены.'}async function assignPractice(){if(!cloudReady||!cloud?.isTeacher||!dbAPI||!databaseInstance){alert('Для назначения практики войдите через Google в подключённом Firebase.');return}let klass=$('teacherGrade').value,topic=$('teacherTopic').value;if(!topic)return;try{await dbAPI.set(dbAPI.ref(databaseInstance,'math-practice-demo/grade10Assignments/'+klass),topic);classAssignments[klass]=topic;renderTeacher();alert('Назначено для '+klass+': '+practiceLabel(topic))}catch(e){alert('Firebase не разрешил назначение: '+e.message+'; проверьте правила доступа базы.')}}async function setPracticeDuration(){
  if(!cloudReady||!cloud?.isTeacher||!cloud.saveDuration){alert('Войдите как учитель через Google');return;}
  const topic=$('teacherTopic').value,minutes=Number($('teacherDuration').value);
  if(!topic){alert('Сначала выберите практику');return;}
@@ -1119,6 +1147,7 @@ async function teacherLogin(){
  }catch(e){$('firebaseMessage').textContent='Ошибка входа учителя: '+e.message;}
 }
 async function setupFirebase(config){
+ assignmentsReady=false;refreshTopics();
  let app=await import('https://www.gstatic.com/firebasejs/10.14.1/firebase-app.js');
  dbAPI=await import('https://www.gstatic.com/firebasejs/10.14.1/firebase-database.js');
  authAPI=await import('https://www.gstatic.com/firebasejs/10.14.1/firebase-auth.js');
@@ -1136,9 +1165,10 @@ async function setupFirebase(config){
  else if(!teacherMode)watchStudent(user.uid);
  dbAPI.onValue(dbAPI.ref(databaseInstance,'math-practice-demo/questions'),snap=>{if(snap.exists()){let data=snap.val();questions=mergePractices([...questions,...(Array.isArray(data)?data:Object.values(data)).filter(q=>String(q.grade)==='10')]);refreshTopics();if(cloud.isTeacher)renderTeacher()}},err=>{$('firebaseMessage').textContent='Ошибка чтения заданий: '+err.message});
  dbAPI.onValue(dbAPI.ref(databaseInstance,'math-practice-demo/grade10Extras'),snap=>{if(snap.exists()){let data=snap.val();questions=mergePractices([...questions,...(Array.isArray(data)?data:Object.values(data)).filter(q=>String(q.grade)==='10')]);refreshTopics();if(cloud.isTeacher)renderTeacher()}},err=>{$('firebaseMessage').textContent='Ошибка синхронизации новых заданий: '+err.message});
- dbAPI.onValue(dbAPI.ref(databaseInstance,'math-practice-demo/grade10Assignments'),snap=>{classAssignments=Object.fromEntries(Object.entries(snap.val()||{}).map(([klass,topic])=>[klass,REPLACED_WEEK_FOUR_TOPICS[topic]||topic]));if(cloud.isTeacher)renderTeacher();else refreshTopics()},err=>{$('firebaseMessage').textContent='Нет доступа к назначениям: '+err.message});
+ dbAPI.onValue(dbAPI.ref(databaseInstance,'math-practice-demo/grade10Assignments'),snap=>{assignmentsReady=true;classAssignments=Object.fromEntries(Object.entries(snap.val()||{}).map(([klass,topic])=>[klass,REPLACED_WEEK_FOUR_TOPICS[topic]||topic]));if(cloud.isTeacher)renderTeacher();else refreshTopics()},err=>{$('firebaseMessage').textContent='Нет доступа к назначениям: '+err.message});
  dbAPI.onValue(dbAPI.ref(databaseInstance,'math-practice-demo/grade10Durations'),snap=>{practiceDurations=snap.val()||{};if(cloud.isTeacher)renderTeacher();else updatePracticeTimer()},err=>{$('firebaseMessage').textContent='Ошибка синхронизации таймера: '+err.message});
  cloudReady=true;
+ if(!cloud.isTeacher)refreshTopics();
  $('firebaseMessage').textContent=cloud.isTeacher?'':'Войдите через Google для просмотра результатов.';
  $('syncStatus').textContent='Firebase подключён. Доступ к данным ограничен правилами базы.';
 }
@@ -1172,7 +1202,7 @@ function readWorkFile(file) {
 }
 async function uploadWork(input) {
  const file = input.files[0];
- if (!file || uploadingWork || switchingStudent) return;
+ if (!file || uploadingWork || switchingStudent || !assignmentOpen()) return;
  const status = $('workUploadStatus');
  const name = $('studentName').value.trim();
  const grade = $('grade').value;
@@ -1191,7 +1221,7 @@ async function uploadWork(input) {
   if (workFiles(record, topic, grade).length >= 5) throw Error('Для этой практики уже прикреплено 5 файлов.');
   status.textContent = 'Загружаем работу…';
   const data = await readWorkFile(file);
-  if (cloud?.uid !== uid) throw Error('Сессия изменилась. Выберите файл ещё раз.');
+  if (cloud?.uid !== uid || !assignmentOpen() || $('topic').value!==topic || $('grade').value!==grade) throw Error('Сессия или назначение изменились. Выберите файл ещё раз.');
   const root = 'math-practice-demo/';
   const id = dbAPI.push(dbAPI.ref(databaseInstance, root + 'studentFiles/' + uid)).key;
   const metadata = {name: file.name, size: file.size, topic, grade, uploadedAt: new Date().toISOString()};
