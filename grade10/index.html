@@ -923,9 +923,28 @@ function teacherTopics(){
  if(menu.dataset.markup!==markup){menu.innerHTML=markup;menu.dataset.markup=markup;}
 
 }
-function matchesTeacherResults(record){
+const archivedRowsKey=KEY+'_teacherArchivedRows';
+function archivedRows(){
+ try{return JSON.parse(localStorage.getItem(archivedRowsKey)||'{}')||{};}catch{return {};}
+}
+function isArchivedRow(uid){
+ return records[uid]?.archived===true||archivedRows()[uid]===true;
+}
+function toggleStudentArchive(uid){
+ if(!cloud?.isTeacher||!records[uid])return;
+ const rows=archivedRows();
+ if(rows[uid])delete rows[uid];else rows[uid]=true;
+ localStorage.setItem(archivedRowsKey,JSON.stringify(rows));
+ $('studentDetail').hidden=true;
+ renderTeacher();
+}
+function matchesTeacherResults(record,uid){
  return record?.grade===$('teacherGrade').value &&
-  (record.archived!==true || $('showArchived').checked);
+  (!isArchivedRow(uid)||$('showArchived').checked);
+}
+function hasPracticeResult(uid,items,topic,klass){
+ const record=gradedRecord(uid);
+ return matchesTeacherResults(record,uid)&&(items.some(q=>record.answers?.[q.id])||workFiles(record,topic,klass).length>0);
 }
 function toggleArchivedResults(){$('studentDetail').hidden=true;
  $('studentDetail').textContent='Нажмите на имя ученика, чтобы увидеть попытки и ответы.';
@@ -985,10 +1004,7 @@ function renderTeacher() {
  const questions = teacherGroup();
  const count = requiredCount(questions);
  const scores = new Map();
- const ids = Object.keys(records).filter(uid => {
-  const record = records[uid];
-  return matchesTeacherResults(record) && (questions.some(q => gradedRecord(uid).answers?.[q.id]) || workFiles(record, topic, klass).length > 0);
- });
+ const ids = Object.keys(records).filter(uid => hasPracticeResult(uid,questions,topic,klass));
  for(const uid of ids)scores.set(uid,practiceScore(gradedRecord(uid),questions,count));
  ids.sort((a, b) => scores.get(b).points - scores.get(a).points || scores.get(b).extra - scores.get(a).extra || (records[a].name || '').localeCompare(records[b].name || ''));
  $('summary').textContent = ids.length + ' учеников с результатами · ' + count + ' обязательных · ' + (questions.length-count) + ' бонусных';
@@ -1009,10 +1025,10 @@ function renderTeacher() {
  }
  $('teacherTable').innerHTML = html + '</tbody></table>';
 }
-function details(n){if(!cloud?.isTeacher)return;openStudent=n;$('studentDetail').hidden=false;let r=records[n]?.answers||{};let q=teacherGroup(),count=requiredCount(q);$('studentDetail').innerHTML='<h3>'+safe(records[n]?.name||'Ученик')+'</h3>'+q.map((x,i)=>{let v=r[x.id];return `<p><b>${i>=count?'★ Бонус · ':''}${safe(x.id)}</b> — ${safe(x.prompt)}<br>${v?`Попыток: ${v.attempts.length}; ${v.correct?'✓ Решено ('+(v.points??1)+' балла)':'Не решено (0 баллов)'}<br>Ответы: ${v.attempts.map(z=>safe(z.answer)+(z.correct?' ✓':' ✕')).join(' → ')}`:'Не начинал(а)'}<br>${manualGradeControl(n,x)}</p>`}).join('')+'<h3>Прикреплённая работа</h3>'+filesHTML(n,$('teacherTopic').value,$('teacherGrade').value)}function download(name,data,type){let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([data],{type}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}function exportCSV(){
+function details(n){if(!cloud?.isTeacher)return;openStudent=n;$('studentDetail').hidden=false;let r=records[n]?.answers||{};let q=teacherGroup(),count=requiredCount(q);$('studentDetail').innerHTML='<h3>'+safe(records[n]?.name||'Ученик')+'</h3><button class="secondary" onclick="toggleStudentArchive('+safe(JSON.stringify(n))+')">'+(archivedRows()[n]?'Вернуть в таблицу':'Скрыть из таблицы')+'</button>'+q.map((x,i)=>{let v=r[x.id];return `<p><b>${i>=count?'★ Бонус · ':''}${safe(x.id)}</b> — ${safe(x.prompt)}<br>${v?`Попыток: ${v.attempts.length}; ${v.correct?'✓ Решено ('+(v.points??1)+' балла)':'Не решено (0 баллов)'}<br>Ответы: ${v.attempts.map(z=>safe(z.answer)+(z.correct?' ✓':' ✕')).join(' → ')}`:'Не начинал(а)'}<br>${manualGradeControl(n,x)}</p>`}).join('')+'<h3>Прикреплённая работа</h3>'+filesHTML(n,$('teacherTopic').value,$('teacherGrade').value)}function download(name,data,type){let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([data],{type}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}function exportCSV(){
  const items=teacherGroup(),count=requiredCount(items);
  const lines=[['Student','Class',...items.map((q,i)=>(i>=count?'Bonus: ':'Required: ')+q.id),'Required correct','Required total','Required points','Required percent','Bonus points','Bonus percentage points','Files']];
- for(const uid of Object.keys(records).filter(uid=>matchesTeacherResults(records[uid]))){
+ for(const uid of Object.keys(records).filter(uid=>hasPracticeResult(uid,items,$('teacherTopic').value,$('teacherGrade').value))){
   const record=gradedRecord(uid),answers=record.answers||{},score=practiceScore(record,items,count);
   lines.push([record.name||uid,record.grade||'',...items.map(q=>answers[q.id]?.correct?'Correct':answers[q.id]?.attempts?.length?'Incorrect':'Not started'),score.correct,count,score.points,score.percent,score.extra,score.bonusPercent,workFiles(record,$('teacherTopic').value,$('teacherGrade').value).length]);
  }
