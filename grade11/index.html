@@ -36,7 +36,7 @@
  <div class="panel">
   <div class="flex between teacher-heading"><h2>Результаты класса</h2><div class="flex">
    <button id="teacherSignIn" onclick="teacherLogin()">Войти через Google</button>
-   <button class="secondary" onclick="exportCSV()">Скачать таблицу</button>
+   <button class="secondary" onclick="exportExcel(this)">Скачать Excel</button>
    <details class="teacher-links"><summary>Ссылки ученикам</summary><div id="teacherPracticeLinks"></div></details>
   </div></div>
   <p id="firebaseMessage" class="muted" role="status"></p>
@@ -503,14 +503,59 @@ function renderTeacher() {
  }
  $('teacherTable').innerHTML = html + '</tbody></table>';
 }
-function details(n){if(!cloud?.isTeacher)return;openStudent=n;$('studentDetail').hidden=false;let r=records[n]?.answers||{};let q=teacherGroup();$('studentDetail').innerHTML='<h3>'+safe(records[n]?.name||'Ученик')+'</h3><button class="secondary" onclick="toggleStudentArchive('+safe(JSON.stringify(n))+')">'+(archivedRows()[n]?'Вернуть в таблицу':'Скрыть из таблицы')+'</button>'+q.map(x=>{let v=r[x.id];return `<p><b>${safe(x.id)}</b> — ${safe(localizedPrompt(x))}<br>${v?`Попыток: ${v.attempts.length}; ${v.correct?'✓ Решено ('+(v.points??1)+' балла)':'Не решено (0 баллов)'}<br>Ответы: ${v.attempts.map(z=>safe(z.answer)+(z.correct?' ✓':' ✕')).join(' → ')}`:'Не начинал(а)'}<br>${manualGradeControl(n,x)}</p>`}).join('')+'<h3>Прикреплённая работа</h3>'+filesHTML(n,$('teacherTopic').value,$('teacherGrade').value)}function download(name,data,type){let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([data],{type}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}function exportCSV(){
- const items=teacherGroup(),count=requiredCount(items);
- const lines=[['Student','Class',...items.map((q,i)=>(i>=count?'Bonus: ':'Required: ')+q.id),'Required correct','Required total','Required points','Required percent','Bonus points','Bonus percentage points','Files']];
- for(const uid of Object.keys(records).filter(uid=>hasPracticeResult(uid,items,$('teacherTopic').value,$('teacherGrade').value))){
-  const record=gradedRecord(uid),answers=record.answers||{},score=practiceScore(record,items,count);
-  lines.push([record.name||uid,record.grade||'',...items.map(q=>answers[q.id]?.correct?'Correct':answers[q.id]?.attempts?.length?'Incorrect':'Not started'),score.correct,count,score.points,score.percent,score.extra,score.bonusPercent,workFiles(record,$('teacherTopic').value,$('teacherGrade').value).length]);
- }
- download('math-results.csv','\ufeff'+lines.map(row=>row.map(v=>'"'+String(v).replace(/"/g,'""')+'"').join(',')).join('\n'),'text/csv');
+function details(n){if(!cloud?.isTeacher)return;openStudent=n;$('studentDetail').hidden=false;let r=records[n]?.answers||{};let q=teacherGroup();$('studentDetail').innerHTML='<h3>'+safe(records[n]?.name||'Ученик')+'</h3><button class="secondary" onclick="toggleStudentArchive('+safe(JSON.stringify(n))+')">'+(archivedRows()[n]?'Вернуть в таблицу':'Скрыть из таблицы')+'</button>'+q.map(x=>{let v=r[x.id];return `<p><b>${safe(x.id)}</b> — ${safe(localizedPrompt(x))}<br>${v?`Попыток: ${v.attempts.length}; ${v.correct?'✓ Решено ('+(v.points??1)+' балла)':'Не решено (0 баллов)'}<br>Ответы: ${v.attempts.map(z=>safe(z.answer)+(z.correct?' ✓':' ✕')).join(' → ')}`:'Не начинал(а)'}<br>${manualGradeControl(n,x)}</p>`}).join('')+'<h3>Прикреплённая работа</h3>'+filesHTML(n,$('teacherTopic').value,$('teacherGrade').value)}function download(name,data,type){let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([data],{type}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}let excelLoader;
+function loadExcelExporter(){
+ if(window.XLSX)return Promise.resolve(window.XLSX);
+ if(!excelLoader)excelLoader=new Promise((resolve,reject)=>{
+  const script=document.createElement('script');
+  script.src='https://cdn.jsdelivr.net/npm/xlsx-js-style@1.2.0/dist/xlsx.bundle.js';
+  script.onload=()=>window.XLSX?resolve(window.XLSX):reject(Error('Библиотека Excel недоступна.'));
+  script.onerror=()=>reject(Error('Не удалось загрузить экспорт Excel.'));
+  document.head.append(script);
+ }).catch(error=>{excelLoader=null;throw error;});
+ return excelLoader;
+}
+function makeResultsWorkbook(xlsx,rows){
+ const sheet=xlsx.utils.aoa_to_sheet(rows.map(row=>row.map(cell=>cell.value)));
+ const widths=rows[0].map((cell,c)=>c===0?Math.min(50,Math.max(25,...rows.map(row=>(row[c]?.value.length||0)+3))):c<3?19:cell.value.includes('Бонусные баллы')?21:cell.value==='Файлы'?10:6);
+ const border={style:'thin',color:{rgb:'D3E3EA'}};
+ rows.forEach((row,r)=>row.forEach((item,c)=>{
+  const cell=sheet[xlsx.utils.encode_cell({r,c})];
+  const status=item.value.trim().charAt(0);
+  const color=r&&status==='✓'?'178033':r&&status==='✕'?'B82E2E':r&&status==='·'?'647C8A':r&&item.bonus&&c<4?'855600':'17364B';
+  cell.s={
+   font:{name:'Calibri',sz:11,bold:r===0,color:{rgb:color}},
+   fill:{patternType:'solid',fgColor:{rgb:item.bonus?'FFF2CB':r===0?'E8F4F8':r%2===0?'F2F5F7':'FFFFFF'}},
+   alignment:{horizontal:c===0?'left':'center',vertical:'center',wrapText:true},
+   border:{top:border,bottom:border,left:border,right:border}
+  };
+ }));
+ sheet['!cols']=widths.map(wch=>({wch}));
+ sheet['!rows']=rows.map((_,r)=>({hpt:r===0?27:24}));
+ sheet['!autofilter']={ref:sheet['!ref']};
+ const workbook=xlsx.utils.book_new();
+ xlsx.utils.book_append_sheet(workbook,sheet,'Результаты');
+ return workbook;
+}
+async function exportExcel(button){
+ if(!cloud?.isTeacher){alert('Войдите через Google как учитель.');return;}
+ const table=$('teacherTable').querySelector('table');
+ if(!table){alert('Сначала выберите класс и практику.');return;}
+ const rows=Array.from(table.rows,row=>Array.from(row.cells,(cell,c)=>{
+  const files=Array.from(cell.querySelectorAll('button[data-work-id],button[data-work-uid]'));
+  return {
+   value:files.length?String(files.length):cell.innerText.trim(),
+   bonus:cell.classList.contains('bonus-column')||(c===3&&table.rows[0].cells[c]?.classList.contains('bonus-column'))
+  };
+ }));
+ const klass=$('teacherGrade').value;
+ button.disabled=true;
+ try{
+  const xlsx=await loadExcelExporter();
+  const workbook=makeResultsWorkbook(xlsx,rows);
+  xlsx.writeFile(workbook,'math-results-'+klass+'.xlsx');
+ }catch(error){alert(error.message);}
+ finally{button.disabled=false;}
 }
 function exportJSON(){download('math-questions.json',JSON.stringify(questions,null,2),'application/json')}function addQuestion(){let grade=$('newGrade').value,topic=$('newTopic').value.trim(),prompt=$('newPrompt').value.trim(),answer=$('newAnswer').value.trim();if(!topic||!prompt||!answer){alert('Заполните тему, условие и ответ');return}questions.push({id:grade+'-'+Date.now(),grade,topic,prompt,answer});saveQuestions();refreshTopics();renderTeacher();alert('Задача добавлена')}async function importQuestions(input){let file=input.files[0];if(!file)return;try{let q=JSON.parse(await file.text());if(!Array.isArray(q)||!q.length||!q.every(x=>['10','11'].includes(String(x.grade))&&x.topic&&x.prompt&&x.answer))throw Error('Неверный формат');q=q.filter(x=>String(x.grade)==='11');if(!q.length)throw Error('В файле нет задач для 11 класса');let ids=new Set(questions.map(x=>x.id));let additions=q.map((x,i)=>({...x,grade:String(x.grade),id:x.id||x.grade+'-import-'+i})).filter(x=>!ids.has(x.id));if(!confirm('Добавить '+additions.length+' новых задач, сохранив существующие?'))return;questions.push(...additions);saveQuestions();refreshTopics();renderTeacher();alert('Импортировано '+q.length+' задач')}catch(e){alert('Ошибка импорта: '+e.message)}}function disconnectFirebase(){$('teacherSignIn').hidden=false;localStorage.removeItem(KEY+'_firebase');cloudReady=false;cloud=null;if(authInstance)authAPI.signOut(authInstance);if(teacherUnsub)teacherUnsub();if(studentUnsub)studentUnsub();$('firebaseMessage').textContent='Отключено';$('syncStatus').textContent='Локальный режим — результаты только в этом браузере.'}async function connectFirebase(){let conf;try{conf=JSON.parse($('firebaseConfig').value);if(!conf.apiKey||!conf.databaseURL||!conf.projectId)throw Error('Нужны apiKey, databaseURL и projectId');localStorage.setItem(KEY+'_firebase',JSON.stringify(conf));$('firebaseMessage').textContent='Подключаемся…';await setupFirebase(conf)}catch(e){$('firebaseMessage').textContent='Ошибка: '+e.message}}let authAPI=null,authInstance=null,dbAPI=null,databaseInstance=null,teacherUnsub=null,studentUnsub=null;
 let switchingStudent=false;
