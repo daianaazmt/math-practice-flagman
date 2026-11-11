@@ -222,7 +222,7 @@ function renderChips(){
   throw Error('Unsupported notation');
  }
 function renderProblem(source){
- const prompt=String(source);
+ const prompt=String(source).replace(/^\s*(?:№\s*)?\d+(?:\.\d+)*[A-Za-zА-Яа-яЁё]?[.)]\s+(?=\S)/u,'');
  const hintStart=prompt.search(/(?:^|\s)(?:Enter\b|Use\s+(?:exact values|interval notation|\[a,a\]|0\s*≤)|If\s+(?:there are no solutions|none,)|Введите(?=\s)|Округлите(?=\s)|Если\s+(?:корней|решений)\s+нет)/iu);
  const statement=hintStart>0?prompt.slice(0,hintStart).trimEnd():prompt;
  const hint=$('problemHint');
