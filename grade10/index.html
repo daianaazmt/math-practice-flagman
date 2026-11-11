@@ -16,7 +16,7 @@
 #teacherPracticeLinks a{display:block;padding:6px 0}
 #firebaseMessage:empty{display:none}#studentDetail{margin-top:16px}
 @media(max-width:700px){.teacher-controls .practice-field{min-width:100%}.teacher-heading{align-items:flex-start}.teacher-links>div{left:0;right:auto}.teacher-controls button{flex:1}}
-.bonus-column{background:#fff2cb!important}.bonus-score{color:#855600;font-weight:700}.chip.bonus{border:2px solid #c68e22}.task-kind{font-weight:700;padding:4px 8px;border-radius:6px;background:#e9f6fa}.task-kind.bonus-column{color:#744c00}
+.bonus-column{background:#fff2cb!important}.chip.bonus{border:2px solid #c68e22}.task-kind{font-weight:700;padding:4px 8px;border-radius:6px;background:#e9f6fa}.task-kind.bonus-column{color:#744c00}
 .keyboard{display:block}.math-tabs,.math-keys{display:flex;flex-wrap:wrap;gap:6px}.math-tabs{margin-bottom:8px}.math-tabs button[aria-pressed="true"]{background:#08789b;color:white}.math-keys button{min-height:38px;padding:7px 10px}.math-keys button:hover{background:#d0eaf5}
 .keyboard{padding:12px;border:1px solid #cce2ea;border-radius:14px;background:#f3f9fb}
 .math-tabs{border-bottom:1px solid #d4e7ee;padding-bottom:8px}
@@ -757,14 +757,13 @@ function requiredCount(items){
 }
 function practiceScore(record,items,count){
  const required=items.slice(0,count),bonus=items.slice(count);
- const points=pointsFor(record,required),extra=pointsFor(record,bonus);
- return {points,extra,percent:count?Math.round(100*points/count):0,bonusPercent:count?Math.round(100*extra/count):0,
+ const points=pointsFor(record,required)+pointsFor(record,bonus);
+ return {points,percent:count?Math.round(100*points/count):0,
   correct:required.filter(q=>record?.answers?.[q.id]?.correct).length};
 }
 function renderStudentScore(items,answers,count){
  const score=practiceScore({answers},items,count);
- $('score').textContent=`Обязательные: ${score.correct}/${count} решено · ${score.points}/${count} баллов`
-  +(items.length>count?` · Бонус: +${score.extra} баллов`:'');
+ $('score').textContent=`Обязательные: ${score.correct}/${count} решено · Итог: ${score.percent}% (${score.points}/${count} баллов)`;
 }
 function renderStudent(){
  const open=assignmentOpen(),wait=$('assignmentWait');
@@ -1172,16 +1171,16 @@ function renderTeacher() {
  const scores = new Map();
  const ids = Object.keys(records).filter(uid => hasPracticeResult(uid,questions,topic,klass));
  for(const uid of ids)scores.set(uid,practiceScore(gradedRecord(uid),questions,count));
- ids.sort((a, b) => scores.get(b).points - scores.get(a).points || scores.get(b).extra - scores.get(a).extra || (records[a].name || '').localeCompare(records[b].name || ''));
+ ids.sort((a, b) => scores.get(b).points - scores.get(a).points || (records[a].name || '').localeCompare(records[b].name || ''));
  $('summary').textContent = ids.length + ' учеников с результатами · ' + count + ' обязательных · ' + (questions.length-count) + ' бонусных';
- let html = '<table><thead><tr><th>Ученик</th><th>Оценка, %</th><th>Баллы ↓</th><th class="bonus-column">Бонусные баллы</th>';
+ let html = '<table><thead><tr><th>Ученик</th><th>Оценка, %</th><th>Итого баллов ↓</th>';
  html += questions.map((question, index) => '<th class="' + (index>=count?'bonus-column':'') + '" title="' + safe((index>=count?'Бонус — ':'Обязательное — ') + question.prompt) + '">' + (index>=count?'★ ':'') + (index + 1) + '</th>').join('');
  html += '<th>Файлы</th></tr></thead><tbody>';
  for (const uid of ids) {
   const record = gradedRecord(uid), answers = record.answers || {}, score = scores.get(uid);
   const argument = safe(JSON.stringify(uid));
   html += '<tr><td><button class="secondary" onclick="details(' + argument + ')">' + safe(record.name || 'Ученик') + '</button></td>';
-  html += '<td>' + score.percent + '% <span class="bonus-score">+' + score.bonusPercent + ' п.п.</span></td><td>' + score.points + ' / ' + count + '</td><td class="bonus-score">+' + score.extra + '</td>';
+  html += '<td>' + score.percent + '%</td><td>' + score.points + ' / ' + count + '</td>';
   html += questions.map((question,index) => {
    const answer = answers[question.id];
    if(answer?.manual)return '<td title="Ручная оценка" style="color:#08789b">'+(answer.points===1?'✓':answer.points===0.5?'½':'✕')+' ✎</td>';
@@ -1205,12 +1204,12 @@ function loadExcelExporter(){
 }
 function makeResultsWorkbook(xlsx,rows){
  const sheet=xlsx.utils.aoa_to_sheet(rows.map(row=>row.map(cell=>cell.value)));
- const widths=rows[0].map((cell,c)=>c===0?Math.min(50,Math.max(25,...rows.map(row=>(row[c]?.value.length||0)+3))):c<3?19:cell.value.includes('Бонусные баллы')?21:cell.value==='Файлы'?10:6);
+ const widths=rows[0].map((cell,c)=>c===0?Math.min(50,Math.max(25,...rows.map(row=>(row[c]?.value.length||0)+3))):c<3?19:cell.value==='Файлы'?10:6);
  const border={style:'thin',color:{rgb:'D3E3EA'}};
  rows.forEach((row,r)=>row.forEach((item,c)=>{
   const cell=sheet[xlsx.utils.encode_cell({r,c})];
   const status=item.value.trim().charAt(0);
-  const color=r&&status==='✓'?'178033':r&&status==='✕'?'B82E2E':r&&status==='·'?'647C8A':r&&item.bonus&&c<4?'855600':'17364B';
+  const color=r&&status==='✓'?'178033':r&&status==='✕'?'B82E2E':r&&status==='·'?'647C8A':'17364B';
   cell.s={
    font:{name:'Calibri',sz:11,bold:r===0,color:{rgb:color}},
    fill:{patternType:'solid',fgColor:{rgb:item.bonus?'FFF2CB':r===0?'E8F4F8':r%2===0?'F2F5F7':'FFFFFF'}},
@@ -1229,11 +1228,11 @@ async function exportExcel(button){
  if(!cloud?.isTeacher){alert('Войдите через Google как учитель.');return;}
  const table=$('teacherTable').querySelector('table');
  if(!table){alert('Сначала выберите класс и практику.');return;}
- const rows=Array.from(table.rows,row=>Array.from(row.cells,(cell,c)=>{
+ const rows=Array.from(table.rows,row=>Array.from(row.cells,cell=>{
   const files=Array.from(cell.querySelectorAll('button[data-work-id],button[data-work-uid]'));
   return {
    value:files.length?String(files.length):cell.innerText.trim(),
-   bonus:cell.classList.contains('bonus-column')||(c===3&&table.rows[0].cells[c]?.classList.contains('bonus-column'))
+   bonus:cell.classList.contains('bonus-column')
   };
  }));
  const klass=$('teacherGrade').value;
