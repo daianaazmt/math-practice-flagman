@@ -849,7 +849,9 @@ function renderChips(){
    const operand=i=>renderMathNode(node.args[i].isParenthesisNode?node.args[i].content:node.args[i]);
    if(node.op==='/')return '<mfrac>'+row(operand(0))+row(operand(1))+'</mfrac>';
    if(node.op==='^')return '<msup>'+row(operand(0))+row(operand(1))+'</msup>';
-   const symbol={'*':node.implicit?'':'·','-':'−'}[node.op]??node.op;
+   const [left,right]=node.args;
+   const piCoefficient=node.op==='*'&&left.isConstantNode&&typeof left.value==='number'&&right.isSymbolNode&&right.name==='pi';
+   const symbol={'*':node.implicit||piCoefficient?'':'·','-':'−'}[node.op]??node.op;
    const op='<mo>'+safe(symbol)+'</mo>';
    return row(args.length===1?op+args[0]:args.join(op));
   }
