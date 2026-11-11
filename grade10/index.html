@@ -873,7 +873,7 @@ function renderProblem(source){
  problem.innerHTML=markup+safe(statement.slice(cursor));
 }
 let formulaAnswer=null;
-const formulaKeys={"π":"\\pi","2π":"2\\pi","a/b":"\\frac{#0}{#?}","√x":"\\sqrt{#0}","ⁿ√x":"\\sqrt[#?]{#0}","x²":"#@^2","xⁿ":"#@^{#?}","|x|":"\\left|#0\\right|","ln(x)":"\\ln(#0)","log₁₀(x)":"\\log_{10}(#0)","logᵦ(x)":"\\log_{#?}(#0)","×":"\\times","÷":"\\div","≤":"\\le","≥":"\\ge","≠":"\\ne","∪":"\\cup","∩":"\\cap","∈":"\\in","∞":"\\infty","°":"^{\\circ}","ℝ":"\\mathbb{R}","∅":"\\varnothing","{ }":"\\left\\{#0\\right\\}","π/2":"\\frac{\\pi}{2}","π/3":"\\frac{\\pi}{3}","π/4":"\\frac{\\pi}{4}","π/6":"\\frac{\\pi}{6}","sin":"\\sin(#0)","cos":"\\cos(#0)","tan":"\\tan(#0)","cot":"\\cot(#0)","arcsin":"\\arcsin(#0)","arccos":"\\arccos(#0)","arctan":"\\arctan(#0)","arccot":"\\operatorname{arccot}(#0)","sin²":"(\\sin(#0))^2","cos²":"(\\cos(#0))^2","tan²":"(\\tan(#0))^2"};
+const formulaKeys={"α":"\\alpha","β":"\\beta","γ":"\\gamma","δ":"\\delta","θ":"\\theta","λ":"\\lambda","μ":"\\mu","φ":"\\phi","ω":"\\omega","π":"\\pi","2π":"2\\pi","a/b":"\\frac{#0}{#?}","√x":"\\sqrt{#0}","ⁿ√x":"\\sqrt[#?]{#0}","x²":"#@^2","xⁿ":"#@^{#?}","|x|":"\\left|#0\\right|","ln(x)":"\\ln(#0)","log₁₀(x)":"\\log_{10}(#0)","logᵦ(x)":"\\log_{#?}(#0)","×":"\\times","÷":"\\div","≤":"\\le","≥":"\\ge","≠":"\\ne","∪":"\\cup","∩":"\\cap","∈":"\\in","∞":"\\infty","°":"^{\\circ}","ℝ":"\\mathbb{R}","∅":"\\varnothing","{ }":"\\left\\{#0\\right\\}","π/2":"\\frac{\\pi}{2}","π/3":"\\frac{\\pi}{3}","π/4":"\\frac{\\pi}{4}","π/6":"\\frac{\\pi}{6}","sin":"\\sin(#0)","cos":"\\cos(#0)","tan":"\\tan(#0)","cot":"\\cot(#0)","arcsin":"\\arcsin(#0)","arccos":"\\arccos(#0)","arctan":"\\arctan(#0)","arccot":"\\operatorname{arccot}(#0)","sin²":"(\\sin(#0))^2","cos²":"(\\cos(#0))^2","tan²":"(\\tan(#0))^2"};
 function syncFormulaAnswer(){
  const plain=/^\\text\{([^{}]*)\}$/.exec(formulaAnswer.value);
  if(plain){$('answer').value=plain[1];return;}
@@ -930,6 +930,7 @@ function keyboard(){
    ['Не определено','не определено'],['Бесконечно много решений','бесконечно много решений']
   ]],
   ['Тригонометрия',[
+   ['α','α'],['β','β'],['γ','γ'],['δ','δ'],['θ','θ'],['λ','λ'],['μ','μ'],['φ','φ'],['ω','ω'],
    ['sin','sin(',')'],['cos','cos(',')'],['tan','tan(',')'],['cot','cot(',')'],
    ['arcsin','asin(',')'],['arccos','acos(',')'],['arctan','atan(',')'],['arccot','acot(',')'],
    ['sin²','sin(',')^2'],['cos²','cos(',')^2'],['tan²','tan(',')^2'],
