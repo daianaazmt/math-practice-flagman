@@ -29,7 +29,8 @@
 .math-number-keys{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));margin-bottom:10px}
 .math-number-keys button{min-width:0;padding-inline:0;font-variant-numeric:tabular-nums}
 @media(max-width:720px){.math-number-keys{grid-template-columns:repeat(6,minmax(0,1fr))}}
-.answer-preview{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:10px;padding:8px 12px;background:#f3f9fb;border:1px solid #cce2ea;border-radius:9px;color:#16465f}.answer-preview[hidden]{display:none}.answer-preview span{font:600 .78rem system-ui,sans-serif}.answer-preview math{font-size:1.35rem}.problem math{font-size:1em;color:inherit}.problem-hint{margin:-12px 8px 16px;color:#476778;font-size:14px;line-height:1.5;text-align:center;white-space:pre-line}.problem-hint[hidden]{display:none}#assignedWork[hidden],#assignmentWait[hidden]{display:none!important}#practiceClosed[hidden],#timedQuestions[hidden],#timedFiles[hidden]{display:none!important}math-field.answer-editor{width:310px;max-width:100%;min-height:44px;box-sizing:border-box;padding:5px 10px;border:1px solid #b9d5df;border-radius:9px;background:white;font-size:1.35rem;--caret-color:#08789b}math-field.answer-editor:focus-within{outline:2px solid #08789b;outline-offset:1px}math-field::part(virtual-keyboard-toggle),math-field::part(menu-toggle){display:none}math-field[hidden],#answer[hidden]{display:none!important}.answer-entry{align-items:stretch;gap:10px}.answer-entry #answer,.answer-entry math-field.answer-editor{display:block;width:100%;max-width:100%;min-width:0;min-height:76px;box-sizing:border-box;padding:12px 14px;font-size:1.35rem;flex:0 0 100%;overflow-x:auto}.answer-entry>button{align-self:flex-start}@media(max-width:600px){.answer-entry #answer,.answer-entry math-field.answer-editor{min-height:68px;font-size:1.2rem}}</style></head><body><header><h1>📘 Math Practice <small class="muted">10 классы</small></h1></header><main class="wrap"><section id="student"><div class="panel flex"><label>Имя ученика <input id="studentName" type="text" placeholder="Имя и фамилия" maxlength="100" oninput="saveIdentity()"></label><label>Класс <select id="grade" onchange="refreshTopics()"><option value="10В">10В</option><option value="10Г">10Г</option><option value="10Д">10Д</option></select></label><select id="topic" aria-label="Текущая практика" hidden></select></div><div id="assignmentWait" class="panel" role="status">Ожидаем назначения практики учителем.</div><div id="assignedWork" hidden><div class="panel flex between"><div><b>Общее время, включая бонусы:</b> <span id="durationLabel">20 минут</span></div><div class="timerbox">⏱ <span id="practiceTimer">20:00</span></div></div><div id="practiceClosed" class="panel" role="status" hidden><strong>Время вышло. Практика закрыта.</strong><p class="muted">Учителю доступны ответы, отправленные до окончания времени.</p></div><div class="grid"><aside class="panel"><h3>Ваш прогресс</h3><div id="score"></div><p class="muted">Обязательная часть рассчитана примерно на 20 минут. ★ — бонусные задания.</p><div id="chips" class="flex" style="margin-top:16px"></div><p class="muted">✓ верно · ✕ неверно · пусто — не начато. Верно за 1–3 попытки: 1 балл; позже: 0,5.</p></aside><article id="timedQuestions" class="panel"><div class="flex between"><h2 id="number"></h2><strong id="practiceTitle" hidden></strong><span id="taskKind" class="task-kind"></span><span id="position" class="muted"></span></div><p id="instruction" class="muted">Введите точный ответ, например sqrt(5), pi/6 или 1/2.</p><div id="problem" class="problem"></div><p id="problemHint" class="problem-hint" hidden></p><label>Ответ</label><div class="flex answer-entry"><input id="answer" type="text" placeholder="Введите ответ" onkeydown="if(event.key==='Enter')check()"><button onclick="check()">Проверить ответ</button></div><div id="answerPreview" class="answer-preview" hidden><span>В математической записи</span><math id="answerMath"></math></div><div class="keyboard" id="keyboard"></div><div id="feedback" class="status" aria-live="polite"></div><div class="flex"><button class="secondary" onclick="move(-1)">← Назад</button><button onclick="move(1)">Следующая →</button></div><p id="answerListHint" class="muted">Для нескольких решений вводите ответы через запятую. Порядок не важен.</p></article></div><div id="timedFiles" class="panel"><h2>Прикрепить решение</h2><label>Фото или документ <input id="workFileInput" type="file" accept=".pdf,.png,.jpg,.jpeg,.webp,.doc,.docx,.txt" onchange="uploadWork(this)"></label><p class="muted">До 5 файлов для каждой практики, каждый до 2 МБ. PDF, фото, Word или TXT.</p><p id="workUploadStatus" role="status"></p><div id="ownWorkFiles"></div></div></div></section><section id="teacher" class="hide">
+.answer-preview{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:10px;padding:8px 12px;background:#f3f9fb;border:1px solid #cce2ea;border-radius:9px;color:#16465f}.answer-preview[hidden]{display:none}.answer-preview span{font:600 .78rem system-ui,sans-serif}.answer-preview math{font-size:1.35rem}.problem math{font-size:1em;color:inherit}.problem-hint{margin:-12px 8px 16px;color:#476778;font-size:14px;line-height:1.5;text-align:center;white-space:pre-line}.problem-hint[hidden]{display:none}#assignedWork[hidden],#assignmentWait[hidden]{display:none!important}#practiceClosed[hidden],#timedQuestions[hidden],#timedFiles[hidden]{display:none!important}math-field.answer-editor{width:310px;max-width:100%;min-height:44px;box-sizing:border-box;padding:5px 10px;border:1px solid #b9d5df;border-radius:9px;background:white;font-size:1.35rem;--caret-color:#08789b}math-field.answer-editor:focus-within{outline:2px solid #08789b;outline-offset:1px}math-field::part(virtual-keyboard-toggle),math-field::part(menu-toggle){display:none}math-field[hidden],#answer[hidden]{display:none!important}.answer-entry{align-items:stretch;gap:10px}.answer-entry #answer,.answer-entry math-field.answer-editor{display:block;width:100%;max-width:100%;min-width:0;min-height:76px;box-sizing:border-box;padding:12px 14px;font-size:1.35rem;flex:0 0 100%;overflow-x:auto}.answer-entry>button{align-self:flex-start}@media(max-width:600px){.answer-entry #answer,.answer-entry math-field.answer-editor{min-height:68px;font-size:1.2rem}}.teacher-answer-row{padding:12px 0;border-bottom:1px solid #d3e5ed;overflow-wrap:anywhere}.teacher-answer-row math{font-size:1.2em}.teacher-answer-row details{margin-top:6px}.teacher-answer-row summary{cursor:pointer;color:#075d79}.teacher-answer-row details p{white-space:pre-line}
+</style></head><body><header><h1>📘 Math Practice <small class="muted">10 классы</small></h1></header><main class="wrap"><section id="student"><div class="panel flex"><label>Имя ученика <input id="studentName" type="text" placeholder="Имя и фамилия" maxlength="100" oninput="saveIdentity()"></label><label>Класс <select id="grade" onchange="refreshTopics()"><option value="10В">10В</option><option value="10Г">10Г</option><option value="10Д">10Д</option></select></label><select id="topic" aria-label="Текущая практика" hidden></select></div><div id="assignmentWait" class="panel" role="status">Ожидаем назначения практики учителем.</div><div id="assignedWork" hidden><div class="panel flex between"><div><b>Общее время, включая бонусы:</b> <span id="durationLabel">20 минут</span></div><div class="timerbox">⏱ <span id="practiceTimer">20:00</span></div></div><div id="practiceClosed" class="panel" role="status" hidden><strong>Время вышло. Практика закрыта.</strong><p class="muted">Учителю доступны ответы, отправленные до окончания времени.</p></div><div class="grid"><aside class="panel"><h3>Ваш прогресс</h3><div id="score"></div><p class="muted">Обязательная часть рассчитана примерно на 20 минут. ★ — бонусные задания.</p><div id="chips" class="flex" style="margin-top:16px"></div><p class="muted">✓ верно · ✕ неверно · пусто — не начато. Верно за 1–3 попытки: 1 балл; позже: 0,5.</p></aside><article id="timedQuestions" class="panel"><div class="flex between"><h2 id="number"></h2><strong id="practiceTitle" hidden></strong><span id="taskKind" class="task-kind"></span><span id="position" class="muted"></span></div><p id="instruction" class="muted">Введите точный ответ, например sqrt(5), pi/6 или 1/2.</p><div id="problem" class="problem"></div><p id="problemHint" class="problem-hint" hidden></p><label>Ответ</label><div class="flex answer-entry"><input id="answer" type="text" placeholder="Введите ответ" onkeydown="if(event.key==='Enter')check()"><button onclick="check()">Проверить ответ</button></div><div id="answerPreview" class="answer-preview" hidden><span>В математической записи</span><math id="answerMath"></math></div><div class="keyboard" id="keyboard"></div><div id="feedback" class="status" aria-live="polite"></div><div class="flex"><button class="secondary" onclick="move(-1)">← Назад</button><button onclick="move(1)">Следующая →</button></div><p id="answerListHint" class="muted">Для нескольких решений вводите ответы через запятую. Порядок не важен.</p></article></div><div id="timedFiles" class="panel"><h2>Прикрепить решение</h2><label>Фото или документ <input id="workFileInput" type="file" accept=".pdf,.png,.jpg,.jpeg,.webp,.doc,.docx,.txt" onchange="uploadWork(this)"></label><p class="muted">До 5 файлов для каждой практики, каждый до 2 МБ. PDF, фото, Word или TXT.</p><p id="workUploadStatus" role="status"></p><div id="ownWorkFiles"></div></div></div></section><section id="teacher" class="hide">
  <div class="panel">
   <div class="flex between teacher-heading"><h2>Результаты класса</h2><div class="flex">
    <button id="teacherSignIn" onclick="teacherLogin()">Войти через Google</button>
@@ -1190,7 +1191,66 @@ function renderTeacher() {
  }
  $('teacherTable').innerHTML = html + '</tbody></table>';
 }
-function details(n){if(!cloud?.isTeacher)return;openStudent=n;$('studentDetail').hidden=false;let r=records[n]?.answers||{};let q=teacherGroup(),count=requiredCount(q);$('studentDetail').innerHTML='<h3>'+safe(records[n]?.name||'Ученик')+'</h3><button class="secondary" onclick="toggleStudentArchive('+safe(JSON.stringify(n))+')">'+(archivedRows()[n]?'Вернуть в таблицу':'Скрыть из таблицы')+'</button>'+q.map((x,i)=>{let v=r[x.id];return `<p><b>${i>=count?'★ Бонус · ':''}${safe(x.id)}</b> — ${safe(x.prompt)}<br>${v?`Попыток: ${v.attempts.length}; ${v.correct?'✓ Решено ('+(v.points??1)+' балла)':'Не решено (0 баллов)'}<br>Ответы: ${v.attempts.map(z=>safe(z.answer)+(z.correct?' ✓':' ✕')).join(' → ')}`:'Не начинал(а)'}<br>${manualGradeControl(n,x)}</p>`}).join('')+'<h3>Прикреплённая работа</h3>'+filesHTML(n,$('teacherTopic').value,$('teacherGrade').value)}function download(name,data,type){let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([data],{type}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}let excelLoader;
+const workedTrigSolutions={
+ '10-W2L2-15a':['pi/4,5*pi/4','Переносим cos(x) вправо. При cos(x) = 0 равенство невозможно, поэтому делим на cos(x) и получаем tan(x) = 1. Общее решение x = π/4 + πk, k ∈ ℤ. На заданном промежутке подходят k = 0 и k = 1.'],
+ '10-W2L2-15b':['3*pi/4,7*pi/4','Переносим cos(x) вправо и делим на cos(x). Нули косинуса уравнению не удовлетворяют. Получаем tan(x) = −1, откуда x = −π/4 + πk, k ∈ ℤ. На заданном промежутке подходят k = 1 и k = 2.'],
+ '10-W2L2-15c':['atan(3),atan(3)+pi','При cos(x) = 0 левая часть равна ±1. Делим на cos(x) и получаем tan(x) = 3. Тогда x = arctan(3) + πk, k ∈ ℤ. На заданном промежутке подходят k = 0 и k = 1.'],
+ '10-W2L2-15d':['2*pi/3,5*pi/3','При cos(x) = 0 левая часть равна ±1. Делим на cos(x) и получаем tan(x) = −√3. Тогда x = −π/3 + πk, k ∈ ℤ. На заданном промежутке подходят k = 1 и k = 2.']
+};
+function teacherAnswerMath(value,format){
+ const text=String(value??'').trim();
+ if(!text)return '—';
+ function expression(part){
+  part=part.trim();
+  if(!part)return '';
+  const assignment=part.match(/^([a-z])_?(\d*)\s*=\s*(.+)$/iu);
+  try{
+   const body=renderMathNode(math.parse(normalize(assignment?assignment[3]:part)));
+   if(!assignment)return body;
+   const symbol='<mi>'+safe(assignment[1])+'</mi>';
+   const label=assignment[2]?'<msub>'+symbol+'<mn>'+safe(assignment[2])+'</mn></msub>':symbol;
+   return label+'<mo>=</mo>'+body;
+  }catch{return '<mtext>'+safe(part)+'</mtext>';}
+ }
+ function item(part){
+  const pair=part.trim().match(/^([[(])([^,]+),([^,]+)([\])])$/u);
+  if(format&&pair)return '<mo>'+safe(pair[1])+'</mo>'+expression(pair[2])+'<mo>,</mo>'+expression(pair[3])+'<mo>'+safe(pair[4])+'</mo>';
+  return expression(part);
+ }
+ const parts=text.split(format?/([;∪])/u:/([,;∪])(?![^()]*\))/u);
+ return '<math>'+parts.map((part,index)=>index%2?'<mo>'+safe(part)+'</mo>':item(part)).join('')+'</math>';
+}
+function details(n){
+ if(!cloud?.isTeacher)return;
+ openStudent=n;
+ const panel=$('studentDetail');
+ panel.hidden=false;
+ const record=gradedRecord(n),answers=record.answers||{};
+ const items=teacherGroup(),count=requiredCount(items);
+ const archiveLabel=archivedRows()[n]?'Вернуть в таблицу':'Скрыть из таблицы';
+ const rows=items.map((question,index)=>{
+  const answer=answers[question.id],attempts=answer?.attempts||[];
+  const last=attempts.at(-1);
+  const worked=Object.hasOwn(workedTrigSolutions,question.id)?workedTrigSolutions[question.id]:null;
+  const solution=question.solution||worked?.[1];
+  const correct=teacherAnswerMath(worked?.[0]??question.answer,question.format);
+  const status=answer?.manual?'Ручная оценка: '+answer.points+' балла':
+   answer?.correct?'✓ Решено ('+(answer.points??1)+' балла)':'Не решено (0 баллов)';
+  const history=attempts.length>1?'<details><summary>Все попытки</summary><ol>'+attempts.map(attempt=>
+   '<li>'+teacherAnswerMath(attempt.answer,question.format)+(attempt.correct?' ✓':' ✕')+'</li>').join('')+'</ol></details>':'';
+  const workedDetails=solution?'<details><summary>Показать решение</summary><p>'+safe(solution)+'</p></details>':'';
+  return '<div class="teacher-answer-row"><div><strong>'+(index+1)+'.</strong> '+
+   (last?teacherAnswerMath(last.answer,question.format)+(last.correct?' ✓':' ✕'):'Ответа нет')+
+   (index>=count?' <span class="task-kind bonus-column">★ Бонус</span>':'')+
+   '</div><div>Правильный ответ: '+correct+'</div>'+
+   '<div class="muted">Попыток: '+attempts.length+' · '+status+'</div>'+
+   manualGradeControl(n,question)+history+workedDetails+'</div>';
+ }).join('');
+ panel.innerHTML='<h3>'+safe(record.name||'Ученик')+'</h3><button class="secondary" onclick="toggleStudentArchive('+
+  safe(JSON.stringify(n))+')">'+archiveLabel+'</button>'+rows+
+  '<h3>Прикреплённая работа</h3>'+filesHTML(n,$('teacherTopic').value,$('teacherGrade').value);
+}
+function download(name,data,type){let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([data],{type}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}let excelLoader;
 function loadExcelExporter(){
  if(window.XLSX)return Promise.resolve(window.XLSX);
  if(!excelLoader)excelLoader=new Promise((resolve,reject)=>{
