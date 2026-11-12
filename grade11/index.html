@@ -513,8 +513,8 @@ function refreshTopics(){
  localStorage.setItem(KEY+'_class',grade);
  const assigned=classAssignments[grade];
  const request=new URLSearchParams(location.search).get('practice');
- const direct=request;
- const available=assignmentsReady&&assigned&&(!request||direct===assigned)&&questions.some(q=>q.grade===gradeLevel(grade)&&q.topic===assigned);
+ const matchesLink=!request||request===assigned||request===numberedCode(assigned||'');
+ const available=assignmentsReady&&assigned&&matchesLink&&questions.some(q=>q.grade===gradeLevel(grade)&&q.topic===assigned);
  const topic=$('topic'),previous=topic.value;
  topic.replaceChildren();
  if(available)topic.add(new Option(assigned,assigned));
@@ -993,7 +993,7 @@ function teacherTopics(){
  const menu=$('teacherPracticeLinks');
  const opened=new Set([...menu.querySelectorAll('details[open]')].map(node=>node.dataset.group));
  const link=({topic,code})=>{
-  const route=topic;
+  const route=code||topic;
   return route?`<a href="./?practice=${encodeURIComponent(route)}" target="_blank" rel="noopener">${safe(localizedTopic(topic))}</a>`:'';
  };
  const section=(key,label,body)=>body?`<details data-group="${safe(key)}"${opened.has(key)?' open':''}><summary>${safe(label)}</summary>${body}</details>`:'';
