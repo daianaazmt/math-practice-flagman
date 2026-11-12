@@ -1,0 +1,38 @@
+{
+  "rules": {
+    "math-practice-demo": {
+      "teacherChat": {
+        "$grade": {
+          ".read": "($grade == '10' || $grade == '11') && (auth != null && auth.token.email == 'daiana.koptleuova@gmail.com' && auth.token.email_verified == true)",
+          "$uid": {
+            ".read": "($grade == '10' || $grade == '11') && (auth != null && auth.uid == $uid && auth.token.firebase.sign_in_provider == 'anonymous')",
+            "messages": {
+              "$message": {
+                ".write": "($grade == '10' || $grade == '11') && !data.exists() && newData.exists() && ((auth != null && auth.uid == $uid && auth.token.firebase.sign_in_provider == 'anonymous' && newData.child('role').val() == 'student') || (auth != null && auth.token.email == 'daiana.koptleuova@gmail.com' && auth.token.email_verified == true && newData.child('role').val() == 'teacher'))",
+                ".validate": "newData.hasChildren(['text','name','className','role','time'])",
+                "text": {
+                  ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 1000"
+                },
+                "name": {
+                  ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 100"
+                },
+                "className": {
+                  ".validate": "newData.isString() && (newData.val() == $grade + 'В' || newData.val() == $grade + 'Г' || newData.val() == $grade + 'Д')"
+                },
+                "role": {
+                  ".validate": "newData.val() == 'teacher' || newData.val() == 'student'"
+                },
+                "time": {
+                  ".validate": "newData.isNumber() && newData.val() == now"
+                },
+                "$other": {
+                  ".validate": false
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}
