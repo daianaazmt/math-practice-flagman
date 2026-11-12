@@ -1,7 +1,6 @@
 (() => {
  const switcher=document.getElementById('whiteboardSwitch');
  const board=document.getElementById('whiteboardPanel');
- const answer=document.getElementById('taskAnswerPanel');
  const canvas=document.getElementById('whiteboardCanvas');
  const context=canvas.getContext('2d');
  if(!context)return;
@@ -59,10 +58,11 @@
  function setMode(showBoard){
   finish();
   visible=showBoard&&key!==null;
-  board.hidden=!visible;answer.hidden=visible;
-  questionButton.setAttribute('aria-pressed',String(!visible));
-  boardButton.setAttribute('aria-pressed',String(visible));
-  if(visible)redraw();
+  boardButton.setAttribute('aria-expanded',String(visible));
+  if(visible){
+   if(!board.open)board.showModal();
+   redraw();
+  }else if(board.open)board.close();
   updateTools();
  }
  function setTask(nextScope,questionId){
@@ -103,6 +103,8 @@
   canvas.addEventListener(type,event=>{if(event.pointerId===pointer)finish();});
  }
  questionButton.onclick=()=>setMode(false);
+ board.addEventListener('cancel',event=>{event.preventDefault();setMode(false);});
+ board.addEventListener('close',()=>{if(!board.open&&visible)setMode(false);});
  boardButton.onclick=()=>setMode(true);
  pen.onclick=()=>{tool='pen';updateTools();};
  eraser.onclick=()=>{tool='eraser';updateTools();};
