@@ -1249,7 +1249,7 @@ function renderTeacherTaskBody(panel,question,ids,index){
    '<button type="button" data-uid="'+safe(uid)+'" data-question="'+safe(question.id)+'" data-value="'+value+'" value="'+value+
    '" aria-label="'+safe(title+' · '+name)+'" title="'+title+'" aria-pressed="'+((attempts.length>0||entry?.manual)&&Number(value)===points)+
    '" onclick="saveManualGrade(this)"'+(!canGrade?' disabled':'')+'>'+label+'</button>').join('');
-  const answer=last?teacherAnswerMath(last.answer,question.format):canGrade?filesHTML(uid,question.topic,klass):'—';
+  const answer=last?teacherAnswerMath(last.answer,question.format):'—';
   return '<li class="task-review-row" data-result="'+result+'"><div class="task-review-grades">'+controls+'</div>'+
    '<button type="button" class="task-review-name" data-uid="'+safe(uid)+'" onclick="showTeacherAttempts(this,'+index+')">'+safe(name)+'</button>'+
    '<button type="button" class="task-review-attempts'+(attempts.length>1&&result==='correct'?' task-review-retried':'')+'" data-uid="'+safe(uid)+'" aria-label="Попытки: '+safe(name)+'" onclick="showTeacherAttempts(this,'+index+')">'+attempts.length+'</button>'+
