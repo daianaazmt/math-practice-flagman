@@ -6,7 +6,87 @@
  const gradeLevelForChat=document.body.dataset.practiceGrade;
  const rootPath='math-practice-demo/teacherChat/'+gradeLevelForChat;
  let unsubscribe, state, busy=false;
- const sorted=value=>Object.values(value||{}).sort((a,b)=>a.time-b.time);
+ const sorted=value=>Object.entries(value||{}).map(([id,item])=>({...item,id}))
+  .sort((a,b)=>a.time-b.time||a.id.localeCompare(b.id));
+ const badge=document.getElementById('chatUnread'), notificationButton=$chat('chatNotifications');
+ let teacherWatch, teacherThreads={}, teacherReady=false, teacherError=false, teacherSession, readByThread={};
+ const after=(item,last)=>!last||item.time>last.time||(item.time===last.time&&item.id.localeCompare(last.id)>0);
+ const unread=(uid,threads=teacherThreads)=>(threads[uid]||[]).filter(item=>item.role==='student'&&after(item,readByThread[uid]));
+ const readKey=()=>rootPath+'/read/'+teacherSession.uid;
+ function loadRead(){
+  try{readByThread=JSON.parse(localStorage.getItem(readKey())||'{}')||{};}catch{readByThread={};}
+ }
+ function syncBadge(){
+  const total=Object.keys(teacherThreads).reduce((sum,uid)=>sum+unread(uid).length,0);
+  badge.hidden=!total;
+  badge.textContent=total>99?'99+':String(total);
+  badge.setAttribute('aria-label','Непрочитанных сообщений: '+total);
+ }
+ function markCurrentThread(){
+  if(!state?.teacher||!state.ready||!state.uid||!dialog.open||document.visibilityState!=='visible'||!document.hasFocus())return;
+  const latest=unread(state.uid).at(-1);
+  if(!latest)return;
+  readByThread[state.uid]={id:latest.id,time:latest.time};
+  try{localStorage.setItem(readKey(),JSON.stringify(readByThread));}catch{}
+ }
+ function syncNotificationButton(){
+  notificationButton.hidden=!state?.teacher||!('Notification' in window)||Notification.permission!=='default';
+ }
+ notificationButton.onclick=async()=>{
+  try{await Notification.requestPermission();}catch{}
+  syncNotificationButton();
+ };
+ function notifyTeacher(count){
+  if(!count||!('Notification' in window)||Notification.permission!=='granted')return;
+  try{
+   const note=new Notification('Math Practice · '+gradeLevelForChat+' класс',{
+    body:count===1?'Новое сообщение от ученика.':'Новых сообщений: '+count,
+    tag:'math-practice-chat-'+gradeLevelForChat
+   });
+   note.onclick=()=>{window.focus();open(true);note.close();};
+  }catch{}
+ }
+ function watchTeacher(){
+  const uid=authInstance?.currentUser?.uid;
+  if(!cloudReady||!cloud?.isTeacher||!databaseInstance||!uid){
+   teacherWatch?.();
+   teacherWatch=null;teacherSession=null;teacherThreads={};teacherReady=false;teacherError=false;readByThread={};
+   syncBadge();
+   if(state?.teacher&&dialog.open)dialog.close();
+   return;
+  }
+  if(teacherSession?.uid===uid&&teacherSession.database===databaseInstance&&teacherWatch)return;
+  teacherWatch?.();
+  const session={uid,database:databaseInstance};
+  teacherSession=session;teacherThreads={};teacherReady=false;teacherError=false;
+  loadRead();syncBadge();
+  teacherWatch=dbAPI.onValue(chatRef(),snapshot=>{
+   if(teacherSession!==session)return;
+   const previous=teacherThreads;
+   const next=Object.fromEntries(Object.entries(snapshot.val()||{}).map(([id,thread])=>[id,sorted(thread.messages)]));
+   const wasReady=teacherReady;
+   teacherThreads=next;teacherReady=true;teacherError=false;
+   if(state?.teacher){state.threads=next;state.ready=true;render();}
+   syncBadge();
+   if(wasReady){
+    let count=0;
+    for(const id of Object.keys(next)){
+     const prior=new Set((previous[id]||[]).map(item=>item.id));
+     count+=unread(id,next).filter(item=>!prior.has(item.id)).length;
+    }
+    notifyTeacher(count);
+   }
+  },()=>{
+   if(teacherSession!==session)return;
+   teacherReady=false;teacherError=true;teacherWatch=null;
+   if(state?.teacher){state.ready=false;form.hidden=true;status.textContent='Чат пока недоступен. Попробуйте позже.';}
+  });
+ }
+ window.addEventListener('practice-chat-session',watchTeacher);
+ window.addEventListener('focus',()=>{if(state?.teacher&&dialog.open)render();});
+ window.addEventListener('storage',event=>{
+  if(teacherSession&&event.key===readKey()){loadRead();if(state?.teacher)render();syncBadge();}
+ });
  const firstStudent=thread=>thread.find(item=>item.role==='student');
  function chatRef(uid){return dbAPI.ref(databaseInstance,rootPath+(uid?'/'+uid:''));}
  function reset(){
@@ -22,7 +102,12 @@
    const threads=Object.entries(state.threads).map(([uid,thread])=>[uid,firstStudent(thread),thread.at(-1)?.time||0])
     .filter(([,student])=>student).sort((a,b)=>b[2]-a[2]);
    if(!threads.some(([uid])=>uid===state.uid))state.uid=threads[0]?.[0];
-   picker.replaceChildren(...threads.map(([uid,student])=>new Option(student.name+' · '+student.className,uid)));
+   markCurrentThread();
+   picker.replaceChildren(...threads.map(([uid,student])=>{
+    const count=unread(uid).length;
+    return new Option(student.name+' · '+student.className+(count?' · '+count+' новых':''),uid);
+   }));
+   syncBadge();
    if(state.uid)picker.value=state.uid;
   }
   const thread=state.threads[state.uid]||[];
@@ -55,21 +140,26 @@
   dialog.showModal();
   const next={teacher,uid:null,threads:{},ready:false};
   state=next;
+  syncNotificationButton();
   try{
    if(!cloudReady||!databaseInstance)throw Error('Дождитесь подключения сайта.');
    if(teacher){
     if(!cloud?.isTeacher)throw Error('Войдите через Google как учитель.');
+    watchTeacher();
+    next.threads=teacherThreads;next.ready=teacherReady;
+    if(teacherError)status.textContent='Чат пока недоступен. Попробуйте позже.';
+    else render();
+    return;
    }else{
     next.name=document.getElementById('studentName').value.trim();
     next.className=document.getElementById('grade').value;
     next.uid=await ensureStudentSession(next.name,next.className);
    }
    if(state!==next||!dialog.open)return;
-   unsubscribe=dbAPI.onValue(chatRef(teacher?null:next.uid),snapshot=>{
+   unsubscribe=dbAPI.onValue(chatRef(next.uid),snapshot=>{
     if(state!==next)return;
     const value=snapshot.val()||{};
-    next.threads=teacher?Object.fromEntries(Object.entries(value).map(([uid,thread])=>[uid,sorted(thread.messages)])):
-     {[next.uid]:sorted(value.messages)};
+    next.threads={[next.uid]:sorted(value.messages)};
     next.ready=true;render();
    },()=>{
     if(state!==next)return;
@@ -105,4 +195,5 @@
  });
  document.getElementById('openStudentChat').addEventListener('click',()=>open(false));
  document.getElementById('openTeacherChat').addEventListener('click',()=>open(true));
+ watchTeacher();
 })();
