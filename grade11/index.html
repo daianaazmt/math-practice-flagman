@@ -582,7 +582,8 @@ function renderStudent(){
 }
 function renderWorksheetFormula(question,problem=$('problem'),hint=$('problemHint')){
  if(!question.answerVariables)return;
- const formula=(typeof simplifiedFormulaImages!=='undefined'&&simplifiedFormulaImages[question.id])||
+ const simplified=typeof simplifiedFormulaImages!=='undefined'&&simplifiedFormulaImages[question.id];
+ const formula=simplified||
   (typeof week1FormulaImages!=='undefined'&&week1FormulaImages[question.id])||
   (typeof week2FormulaImages!=='undefined'&&week2FormulaImages[question.id]);
  if(!formula){hint.textContent='Формула не загрузилась. Обновите страницу.';hint.hidden=false;return;}
@@ -591,7 +592,7 @@ function renderWorksheetFormula(question,problem=$('problem'),hint=$('problemHin
  img.className='worksheet-formula';
  img.src='data:image/webp;base64,'+image;
  img.alt='Формула из worksheet';
- const scale=problem.id==='problem'?2.75:1.45;
+ const scale=problem.id==='problem'?Math.min(simplified?1.95:1.55,90/height):1.45;
  img.width=Math.round(width*scale);
  img.height=Math.round(height*scale);
  problem.append(img);
