@@ -96,9 +96,6 @@
   const submit=form.querySelector('button');
   busy=true;submit.disabled=true;
   try{
-   if(!active.teacher&&!records[uid]?.name){
-    await dbAPI.update(dbAPI.ref(databaseInstance,'math-practice-demo/records/'+uid),{name:student.name,grade:student.className});
-   }
    const pending=dbAPI.push(dbAPI.child(chatRef(uid),'messages'));
    await dbAPI.set(pending,{text,name:student.name,className:student.className,role:active.teacher?'teacher':'student',time:dbAPI.serverTimestamp()});
    if(state===active&&active.uid===uid){message.value='';status.textContent='';}
