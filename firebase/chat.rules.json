@@ -3,12 +3,12 @@
     "math-practice-demo": {
       "teacherChat": {
         "$grade": {
-          ".read": "($grade == '10' || $grade == '11') && (auth != null && auth.token.email == 'daiana.koptleuova@gmail.com' && auth.token.email_verified == true)",
+          ".read": "($grade == '10' || $grade == '11') && (auth != null && auth.token.email == 'daiana.koptleuova@gmail.com' && auth.token.email_verified == true && auth.token.firebase.sign_in_provider == 'google.com')",
           "$uid": {
             ".read": "($grade == '10' || $grade == '11') && (auth != null && auth.uid == $uid && auth.token.firebase.sign_in_provider == 'anonymous')",
             "messages": {
               "$message": {
-                ".write": "($grade == '10' || $grade == '11') && !data.exists() && newData.exists() && ((auth != null && auth.uid == $uid && auth.token.firebase.sign_in_provider == 'anonymous' && newData.child('role').val() == 'student') || (auth != null && auth.token.email == 'daiana.koptleuova@gmail.com' && auth.token.email_verified == true && newData.child('role').val() == 'teacher'))",
+                ".write": "($grade == '10' || $grade == '11') && !data.exists() && newData.exists() && ((auth != null && auth.uid == $uid && auth.token.firebase.sign_in_provider == 'anonymous' && newData.child('role').val() == 'student') || (auth != null && auth.token.email == 'daiana.koptleuova@gmail.com' && auth.token.email_verified == true && auth.token.firebase.sign_in_provider == 'google.com' && newData.child('role').val() == 'teacher'))",
                 ".validate": "newData.hasChildren(['text','name','className','role','time'])",
                 "text": {
                   ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 1000"
