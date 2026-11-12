@@ -12,6 +12,7 @@
  const pen=document.getElementById('whiteboardPen');
  const eraser=document.getElementById('whiteboardEraser');
  const undo=document.getElementById('whiteboardUndo');
+ const scroll=document.getElementById('whiteboardScrollMode');
  const clear=document.getElementById('whiteboardClear');
  const sketches=new Map();
  let scope=null,key=null,visible=false,tool='pen',pointer=null,stroke=null;
@@ -20,6 +21,8 @@
  function updateTools(){
   pen.setAttribute('aria-pressed',String(tool==='pen'));
   eraser.setAttribute('aria-pressed',String(tool==='eraser'));
+  scroll?.setAttribute('aria-pressed',String(tool==='scroll'));
+  canvas.classList.toggle('whiteboard-panning',tool==='scroll');
   undo.disabled=clear.disabled=!strokes().length;
  }
  function paint(item,from,to){
@@ -43,7 +46,7 @@
   if(!visible)return;
   const rect=canvas.getBoundingClientRect();
   if(!rect.width||!rect.height)return;
-  const ratio=Math.min(window.devicePixelRatio||1,3);
+  const ratio=Math.min(window.devicePixelRatio||1,3,Math.sqrt(8_000_000/(rect.width*rect.height)));
   width=rect.width;height=rect.height;
   canvas.width=Math.round(width*ratio);
   canvas.height=Math.round(height*ratio);
@@ -93,7 +96,7 @@
   return {x:clamp((event.clientX-rect.left)/rect.width),y:clamp((event.clientY-rect.top)/rect.height)};
  }
  canvas.addEventListener('pointerdown',event=>{
-  if(!visible||pointer!==null||event.button!==0)return;
+  if(!visible||tool==='scroll'||pointer!==null||event.button!==0)return;
   event.preventDefault();
   const p=point(event);
   pointer=event.pointerId;
@@ -122,6 +125,7 @@
  boardButton.onclick=()=>setMode(problem?!visible:true);
  pen.onclick=()=>{tool='pen';updateTools();};
  eraser.onclick=()=>{tool='eraser';updateTools();};
+ if(scroll)scroll.onclick=()=>{finish();tool='scroll';updateTools();};
  undo.onclick=()=>{finish();strokes().pop();redraw();updateTools();};
  clear.onclick=()=>{finish();sketches.delete(key);redraw();updateTools();};
  if(typeof ResizeObserver==='function')new ResizeObserver(redraw).observe(canvas);
