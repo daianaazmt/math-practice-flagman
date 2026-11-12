@@ -1084,28 +1084,19 @@ function watchManualGrades(){
   renderTeacher();
  },error=>{$('firebaseMessage').textContent='Ручные оценки: '+error.message;});
 }
-const mutedZeroGrades=new Set();
 async function saveManualGrade(select){
  if(!cloud?.isTeacher||!dbAPI||!databaseInstance)return;
  const {uid,question}=select.dataset;
  const record=records[uid],item=teacherGroup().find(q=>q.id===question),klass=$('teacherGrade').value;
- if(!canGradeSubmission(record,item,klass))return;
  const value=select.value;
  if(!['','0','0.5','1'].includes(value))return;
- const key=uid+'/'+manualKey(question);
- if(value==='0'&&select.getAttribute('aria-pressed')==='true'){
-  mutedZeroGrades.add(key);
-  select.setAttribute('aria-pressed','false');
-  return;
- }
- if(value==='0'&&mutedZeroGrades.has(key)){
-  mutedZeroGrades.delete(key);
-  select.setAttribute('aria-pressed','true');
-  return;
- }
+ const gradeKey=manualKey(question);
+ const undoZero=value==='0'&&manualGrades[uid]?.[gradeKey]===0;
+ if(!canGradeSubmission(record,item,klass)&&!(undoZero&&item&&record?.grade===klass))return;
+ const key=uid+'/'+gradeKey;
  select.disabled=true;
  try{
-  const points=value===''?null:Number(value);
+  const points=value===''||undoZero?null:Number(value);
   const review=points===null?null:reviewPayload(record.answers?.[question],points);
   await dbAPI.update(dbAPI.ref(databaseInstance,'math-practice-demo'),{
    ['teacherGrades/11/'+key]:points,
@@ -1258,15 +1249,13 @@ function renderTeacherTaskBody(panel,question,ids,index){
  const rows=ids.map(uid=>{
   const record=gradedRecord(uid),entry=record.answers?.[question.id],attempts=entry?.attempts||[];
   const last=attempts.at(-1),points=entry?.points??(entry?.correct?1:0);
-  const zeroGradeKey=uid+'/'+manualKey(question.id);
-  if(points!==0)mutedZeroGrades.delete(zeroGradeKey);
   const result=points===1?'correct':points===0.5?'partial':attempts.length||entry?.manual?'wrong':'empty';
   const name=record.name||'Ученик';
   const klass=$('teacherGrade').value,canGrade=canGradeSubmission(records[uid],question,klass);
   const controls=[['0','✕','0 баллов'],['0.5','½','Полбалла'],['1','✓','1 балл']].map(([value,label,title])=>
    '<button type="button" data-uid="'+safe(uid)+'" data-question="'+safe(question.id)+'" data-value="'+value+'" value="'+value+
-   '" aria-label="'+safe(title+' · '+name)+'" title="'+title+'" aria-pressed="'+((attempts.length>0||entry?.manual)&&Number(value)===points&&!(value==='0'&&mutedZeroGrades.has(zeroGradeKey)))+
-   '" onclick="saveManualGrade(this)"'+(!canGrade?' disabled':'')+'>'+label+'</button>').join('');
+   '" aria-label="'+safe(title+' · '+name)+'" title="'+title+'" aria-pressed="'+((attempts.length>0||entry?.manual)&&Number(value)===points)+
+   '" onclick="saveManualGrade(this)"'+(!canGrade&&!(value==='0'&&entry?.manual&&points===0)?' disabled':'')+'>'+label+'</button>').join('');
   const answer=last?teacherAnswerMath(last.answer,question.format):'—';
   return '<li class="task-review-row" data-result="'+result+'"><div class="task-review-grades">'+controls+'</div>'+
    '<button type="button" class="task-review-name" data-uid="'+safe(uid)+'" onclick="showTeacherAttempts(this,'+index+')">'+safe(name)+'</button>'+
