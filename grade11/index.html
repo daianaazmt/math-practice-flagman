@@ -515,7 +515,7 @@ function refreshTopics(){
  localStorage.setItem(KEY+'_class',grade);
  const assigned=classAssignments[grade];
  const request=new URLSearchParams(location.search).get('practice');
- const matchesLink=!request||request===assigned||request===numberedCode(assigned||'');
+ const matchesLink=!request||request===assigned||!!assigned&&request===practiceRoute(assigned);
  const available=assignmentsReady&&assigned&&matchesLink&&questions.some(q=>q.grade===gradeLevel(grade)&&q.topic===assigned);
  const topic=$('topic'),previous=topic.value;
  topic.replaceChildren();
@@ -969,7 +969,14 @@ async function assignPractice(){if(!cloud?.isTeacher||!databaseInstance){alert('
  finally{button.disabled=false;}
 }
 
-setInterval(()=>{if(!$('student').classList.contains('hide')&&$('topic').value)updatePracticeTimer()},1000);function teacherGroup(){return questions.filter(q=>q.grade===gradeLevel($('teacherGrade').value)&&q.topic===$('teacherTopic').value)}function numberedCode(topic){return /^(\d+\.\d+\.\d+)\./.exec(localizedTopic(topic))?.[1];}
+setInterval(()=>{if(!$('student').classList.contains('hide')&&$('topic').value)updatePracticeTimer()},1000);function teacherGroup(){return questions.filter(q=>q.grade===gradeLevel($('teacherGrade').value)&&q.topic===$('teacherTopic').value)}function numberedCode(topic){return /^(\d+\.\d+\.\d+)(?:\.\s*|\s+|$)/.exec(localizedTopic(topic))?.[1];}
+function practiceRoute(topic){
+ const code=numberedCode(topic);
+ if(code)return code;
+ let hash=14695981039346656037n;
+ for(const char of topic)hash=BigInt.asUintN(64,(hash^BigInt(char.codePointAt(0)))*1099511628211n);
+ return 'p'+hash.toString(36);
+}
 function changePracticeFilter(resetWeek){
  if(resetWeek)$('teacherWeek').value='';
  
@@ -997,8 +1004,8 @@ function teacherTopics(){
  setOptions($('teacherTopic'),shown.map(x=>x.topic),localizedTopic,current);
  const menu=$('teacherPracticeLinks');
  const opened=new Set([...menu.querySelectorAll('details[open]')].map(node=>node.dataset.group));
- const link=({topic,code})=>{
-  const route=code||topic;
+ const link=({topic})=>{
+  const route=practiceRoute(topic);
   return route?`<a href="./?practice=${encodeURIComponent(route)}" target="_blank" rel="noopener">${safe(localizedTopic(topic))}</a>`:'';
  };
  const section=(key,label,body)=>body?`<details data-group="${safe(key)}"${opened.has(key)?' open':''}><summary>${safe(label)}</summary>${body}</details>`:'';
