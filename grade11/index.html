@@ -11,7 +11,7 @@
 .teacher-extra>summary,.teacher-links>summary{cursor:pointer;font-weight:600}
 .extra-content{padding-top:16px}.teacher-links{position:relative;font-size:14px}
 .teacher-links>div{position:absolute;right:0;top:28px;z-index:10;background:white;padding:16px;border:1px solid #d5e8ef;border-radius:10px;min-width:180px;box-shadow:0 6px 20px #17364b18}
-#firebaseMessage:empty{display:none}#studentDetail{margin-top:16px}
+#firebaseMessage:empty{display:none}
 @media(max-width:700px){.teacher-controls .practice-field{min-width:100%}.teacher-heading{align-items:flex-start}.teacher-links>div{left:0;right:auto}.teacher-controls button{flex:1}}
 .keyboard{display:block}.math-tabs,.math-keys{display:flex;flex-wrap:wrap;gap:6px}.math-tabs{margin-bottom:8px}.math-tabs button[aria-pressed="true"]{background:#08789b;color:white}.math-keys button{min-height:38px;padding:7px 10px}.math-keys button:hover{background:#d0eaf5}
 .keyboard{padding:12px;border:1px solid #cce2ea;border-radius:14px;background:#f3f9fb}
@@ -35,7 +35,7 @@
 .answer-preview{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:10px;padding:8px 12px;background:#f3f9fb;border:1px solid #cce2ea;border-radius:9px;color:#16465f}.answer-preview[hidden]{display:none}.answer-preview span{font:600 .78rem system-ui,sans-serif}.answer-preview math{font-size:1.35rem}#teacherPracticeLinks{width:min(360px,85vw);max-height:55vh;overflow:auto}#teacherPracticeLinks details{margin:4px 0;padding-left:10px}#teacherPracticeLinks summary{padding:5px 0}#teacherPracticeLinks a{display:block;padding:6px 0}.problem math{font-size:1em;color:inherit}.problem-hint{margin:-12px 8px 16px;color:#476778;font-size:14px;line-height:1.5;text-align:center;white-space:pre-line}.problem-hint[hidden]{display:none}#assignedWork[hidden],#assignmentWait[hidden]{display:none!important}#practiceClosed[hidden],#timedQuestions[hidden],#timedFiles[hidden]{display:none!important}math-field.answer-editor{width:310px;max-width:100%;min-height:44px;box-sizing:border-box;padding:5px 10px;border:1px solid #b9d5df;border-radius:9px;background:white;font-size:1.35rem;--caret-color:#08789b}math-field.answer-editor:focus-within{outline:2px solid #08789b;outline-offset:1px}math-field::part(virtual-keyboard-toggle),math-field::part(menu-toggle){display:none}math-field[hidden],#answer[hidden]{display:none!important}.answer-entry{align-items:stretch;gap:10px}.answer-entry #answer,.answer-entry math-field.answer-editor{display:block;width:100%;max-width:100%;min-width:0;min-height:76px;box-sizing:border-box;padding:12px 14px;font-size:1.35rem;flex:0 0 100%;overflow-x:auto}.answer-entry>button{align-self:flex-start}@media(max-width:600px){.answer-entry #answer,.answer-entry math-field.answer-editor{min-height:68px;font-size:1.2rem}}.math-number-keys{display:grid;grid-template-columns:repeat(12,minmax(0,1fr));margin-bottom:10px}
 .math-number-keys button{min-width:0;padding-inline:0;font-variant-numeric:tabular-nums}
 @media(max-width:720px){.math-number-keys{grid-template-columns:repeat(6,minmax(0,1fr))}}
-.teacher-answer-row{padding:12px 0;border-bottom:1px solid #d3e5ed;overflow-wrap:anywhere}.teacher-answer-row math{font-size:1.2em}.teacher-answer-row details{margin-top:6px}.teacher-answer-row summary{cursor:pointer;color:#075d79}.teacher-answer-row details p{white-space:pre-line}
+
 .worksheet-formula{display:block;max-width:100%;height:auto;margin:12px auto 0}
 
 .task-heading-button{padding:4px 6px;min-width:34px;border-radius:5px;color:inherit;background:transparent;font:inherit}
@@ -138,7 +138,7 @@
   <p id="firebaseMessage" class="muted" role="status"></p>
   <div class="teacher-controls">
    <label>Класс <select id="teacherGrade" onchange="renderTeacher()"><option value="11В">11В</option><option value="11Г">11Г</option><option value="11Д">11Д</option></select></label>
-   <label>Четверть <select id="teacherTerm" onchange="changePracticeFilter(true)"></select></label><label>Неделя <select id="teacherWeek" onchange="changePracticeFilter(false)"></select></label><label class="practice-field">Практика <select id="teacherTopic" onchange="document.getElementById('studentDetail').hidden=true;renderTeacher()"></select></label>
+   <label>Четверть <select id="teacherTerm" onchange="changePracticeFilter(true)"></select></label><label>Неделя <select id="teacherWeek" onchange="changePracticeFilter(false)"></select></label><label class="practice-field">Практика <select id="teacherTopic" onchange="renderTeacher()"></select></label>
    <label>Минуты <input id="teacherDuration" type="number" min="1" max="180" value="20"></label>
    <button class="secondary" onclick="setPracticeDuration()">Сохранить время</button>
    <button onclick="assignPractice()">Назначить классу</button>
@@ -146,7 +146,7 @@
   <p id="assignedStatus" class="muted assignment-status">Назначение загружается…</p>
   <div class="flex between results-toolbar"><p id="summary" class="muted"></p><label class="archive-toggle"><input id="showArchived" type="checkbox" onchange="renderTeacher()"> Архивные работы</label></div>
   <div class="scroll" id="teacherTable"></div>
-  <section id="taskReview" class="task-review" aria-label="Задания практики" hidden></section><dialog id="teacherAttempts" class="teacher-attempts" aria-labelledby="teacherAttemptsTitle"></dialog><div id="studentDetail" class="box" hidden></div>
+  <section id="taskReview" class="task-review" aria-label="Задания практики" hidden></section><dialog id="teacherAttempts" class="teacher-attempts" aria-labelledby="teacherAttemptsTitle"></dialog>
  </div>
  <details class="panel teacher-extra"><summary>Задания и импорт</summary><div class="extra-content"><p class="muted">Добавляйте задачи вручную или импортируйте JSON. Добавленные задания сохраняются в этом браузере; автоматическая синхронизация новых заданий между устройствами пока отключена.</p><div class="flex"><input id="newTopic" type="text" placeholder="Тема"><select id="newGrade"><option value="11">11 класс</option></select></div><div class="flex" style="margin-top:8px"><input id="newPrompt" type="text" placeholder="Условие задачи"><input id="newAnswer" type="text" placeholder="Правильный ответ"><button onclick="addQuestion()">Добавить задачу</button></div><details><summary>Импорт задач из JSON</summary><p class="muted">Формат: массив объектов с полями grade, topic, prompt, answer. Импорт добавляет новые задания и сохраняет существующие.</p><input type="file" id="importFile" accept=".json,application/json" onchange="importQuestions(this)"></details><div class="flex" style="margin-top:12px"><button class="secondary" onclick="exportJSON()">Экспорт заданий JSON</button></div></div></details>
  <details class="panel teacher-extra"><summary>Технические настройки</summary><div class="extra-content">
@@ -311,7 +311,7 @@ const KEY='mathpractice_flagman_grade11_v1';let questions=mergeWeekTwoQuestions(
   dbAPI.set(dbAPI.ref(databaseInstance,'math-practice-demo/grade11Extras'),bank).catch(error=>alert('Ошибка синхронизации заданий 11 класса: '+error.message));
  }
 }
-async function show(s){if(s==='teacher'&&cloud&&!cloud.isTeacher){await teacherLogin();if(!cloud?.isTeacher)return;}if(s==='student'&&cloud?.isTeacher){alert('Для проверки режима ученика откройте игру в другом браузере или режиме инкогнито.');return;}$('student').classList.toggle('hide',s!=='student');$('teacher').classList.toggle('hide',s!=='teacher');if(s==='teacher'){if(!cloud?.isTeacher){$('teacherTable').textContent='Для просмотра результатов войдите через Google.';$('studentDetail').textContent='Доступ только для учителя.';}else renderTeacher()}}function sameStudent(record){return record?.name?.trim().toLowerCase()===$('studentName').value.trim().toLowerCase()}
+async function show(s){if(s==='teacher'&&cloud&&!cloud.isTeacher){await teacherLogin();if(!cloud?.isTeacher)return;}if(s==='student'&&cloud?.isTeacher){alert('Для проверки режима ученика откройте игру в другом браузере или режиме инкогнито.');return;}$('student').classList.toggle('hide',s!=='student');$('teacher').classList.toggle('hide',s!=='teacher');if(s==='teacher'){if(!cloud?.isTeacher){$('teacherTable').textContent='Для просмотра результатов войдите через Google.';}else renderTeacher()}}function sameStudent(record){return record?.name?.trim().toLowerCase()===$('studentName').value.trim().toLowerCase()}
 function saveIdentity(){
  localStorage.setItem(KEY+'_name',$('studentName').value);
  renderStudent();
@@ -690,7 +690,7 @@ async function assignPractice(){if(!cloud?.isTeacher||!databaseInstance){alert('
 setInterval(()=>{if(!$('student').classList.contains('hide')&&$('topic').value)updatePracticeTimer()},1000);function teacherGroup(){return questions.filter(q=>q.grade===gradeLevel($('teacherGrade').value)&&q.topic===$('teacherTopic').value)}function numberedCode(topic){return /^(\d+\.\d+\.\d+)\./.exec(localizedTopic(topic))?.[1];}
 function changePracticeFilter(resetWeek){
  if(resetWeek)$('teacherWeek').value='';
- $('studentDetail').hidden=true;
+ 
  renderTeacher();
 }
 function teacherTopics(){
@@ -743,7 +743,7 @@ function toggleStudentArchive(uid){
  const rows=archivedRows();
  if(rows[uid])delete rows[uid];else rows[uid]=true;
  localStorage.setItem(archivedRowsKey,JSON.stringify(rows));
- $('studentDetail').hidden=true;
+ 
  renderTeacher();
 }
 function matchesTeacherResults(record,uid){
@@ -754,7 +754,7 @@ function hasPracticeResult(uid,items,topic,klass){
  const record=gradedRecord(uid);
  return matchesTeacherResults(record,uid)&&(items.some(q=>record.answers?.[q.id])||workFiles(record,topic,klass).length>0);
 }
-let manualGrades={},manualGradeSource=null,openStudent=null;
+let manualGrades={},manualGradeSource=null;
 function manualKey(id){return encodeURIComponent(id).replaceAll('.','%2E')}
 function gradedRecord(uid){
  const record=records[uid],manual=manualGrades[uid];
@@ -772,7 +772,6 @@ function watchManualGrades(){
  dbAPI.onValue(dbAPI.ref(databaseInstance,'math-practice-demo/teacherGrades/11'),snapshot=>{
   manualGrades=snapshot.val()||{};
   renderTeacher();
-  if(openStudent&&!$('studentDetail').hidden)details(openStudent);
  },error=>{$('firebaseMessage').textContent='Ручные оценки: '+error.message;});
 }
 async function saveManualGrade(select){
@@ -786,7 +785,6 @@ async function saveManualGrade(select){
   await dbAPI.set(dbAPI.ref(databaseInstance,'math-practice-demo/teacherGrades/11/'+uid+'/'+manualKey(question)),value===''?null:Number(value));
  }catch(error){
   $('firebaseMessage').textContent='Не удалось сохранить оценку: '+error.message;
-  if(openStudent&&!$('studentDetail').hidden)details(openStudent);
   renderTeacher();
  }finally{select.disabled=false;}
 }
@@ -815,8 +813,7 @@ function renderTeacher() {
  html += '<th>Файлы</th></tr></thead><tbody>';
  for (const uid of ids) {
   const record = gradedRecord(uid), answers = record.answers || {}, score = scores.get(uid);
-  const argument = safe(JSON.stringify(uid));
-  html += '<tr><td><button class="secondary" onclick="details(' + argument + ')">' + safe(record.name || 'Ученик') + '</button></td>';
+  html += '<tr><td><button class="secondary teacher-roster-name" data-uid="' + safe(uid) + '" onclick="showTeacherAttempts(this)">' + safe(record.name || 'Ученик') + '</button></td>';
   html += '<td>' + score.percent + '%</td><td>' + score.points + ' / ' + count + '</td>';
   html += questions.map((question,index) => {
    const answer = answers[question.id];
@@ -885,7 +882,7 @@ function renderTeacherTask(questions,ids,count,klass,topic){
  if(!cloud?.isTeacher||!questions.length){panel.hidden=true;return;}
  taskReviewContext=context;
  const oldItems=new Map([...panel.querySelectorAll('.task-review-item')].map(item=>[item.dataset.id,item]));
- if(!oldItems.size)panel.innerHTML='<div class="task-review-guide">Нажмите номер задания в таблице, чтобы увидеть ответы класса. Нажмите имя ученика, чтобы открыть его работу.</div><div class="task-review-toolbar"><strong>Задания практики</strong><button type="button" class="secondary" id="toggleTeacherTasks" onclick="toggleAllTeacherTasks()">Развернуть все</button></div><div id="teacherTaskItems"></div>';
+ if(!oldItems.size)panel.innerHTML='<div class="task-review-guide">Нажмите номер задания в таблице, чтобы увидеть ответы класса. Нажмите число попыток, чтобы открыть историю ответов.</div><div class="task-review-toolbar"><strong>Задания практики</strong><button type="button" class="secondary" id="toggleTeacherTasks" onclick="toggleAllTeacherTasks()">Развернуть все</button></div><div id="teacherTaskItems"></div>';
  const items=questions.map((question,index)=>{
   const item=oldItems.get(question.id)||document.createElement('details');
   item.className='task-review-item';
@@ -932,7 +929,7 @@ function renderTeacherTaskBody(panel,question,ids,index){
    '" onclick="saveManualGrade(this)"'+(!attempts.length?' disabled':'')+'>'+label+'</button>').join('');
   const answer=last?teacherAnswerMath(last.answer,question.format):'—';
   return '<li class="task-review-row" data-result="'+result+'"><div class="task-review-grades">'+controls+'</div>'+
-   '<button type="button" class="task-review-name" onclick="details('+safe(JSON.stringify(uid))+')">'+safe(name)+'</button>'+
+   '<button type="button" class="task-review-name" data-uid="'+safe(uid)+'" onclick="showTeacherAttempts(this,'+index+')">'+safe(name)+'</button>'+
    '<button type="button" class="task-review-attempts'+(attempts.length>1&&result==='correct'?' task-review-retried':'')+'" data-uid="'+safe(uid)+'" aria-label="Попытки: '+safe(name)+'" onclick="showTeacherAttempts(this,'+index+')">'+attempts.length+'</button>'+
    '<div class="task-review-entry">'+answer+'</div></li>';
  }).join('');
@@ -949,10 +946,15 @@ function renderTeacherTaskBody(panel,question,ids,index){
 }
 function showTeacherAttempts(button,index){
  if(!cloud?.isTeacher)return;
- const question=teacherGroup()[index];
+ const questions=teacherGroup(),uid=button.dataset.uid;
+ if(index===undefined){
+  const answers=records[uid]?.answers||{};
+  index=Math.max(0,questions.findIndex(question=>answers[question.id]?.attempts?.length));
+ }
+ const question=questions[index];
  if(!question)return;
- const ids=[...button.closest('.task-review-list').querySelectorAll('.task-review-attempts')].map(item=>item.dataset.uid);
- renderTeacherAttempts(question,index,ids,button.dataset.uid);
+ const ids=[...$('teacherTable').querySelectorAll('.teacher-roster-name')].map(item=>item.dataset.uid);
+ renderTeacherAttempts(question,index,ids,uid);
  const dialog=$('teacherAttempts');
  if(!dialog.open)dialog.showModal();
 }
@@ -974,7 +976,9 @@ function renderTeacherAttempts(question,index,ids,uid){
   '<select aria-label="Ученик">'+ids.map((id,i)=>'<option value="'+i+'"'+(id===uid?' selected':'')+'>'+safe(records[id]?.name||'Ученик')+'</option>').join('')+'</select>'+
   '<button type="button" aria-label="Следующий ученик" data-shift="1"'+(current>=ids.length-1?' disabled':'')+'>→</button></div>'+
   '<div class="teacher-attempt-problem"></div><div class="task-review-hint" hidden></div><div class="task-review-answer"><strong>Правильный ответ</strong> '+teacherAnswerMath(question.answer,question.format)+'</div>'+ 
-  (rows?'<ol>'+rows+'</ol>':'<p>Попыток пока нет.</p>')+'</div>';
+  (rows?'<ol>'+rows+'</ol>':'<p>Попыток пока нет.</p>')+
+  '<button type="button" class="secondary" data-uid="'+safe(uid)+'" onclick="toggleStudentArchive(this.dataset.uid)">'+
+  (archivedRows()[uid]?'Вернуть в таблицу':'Скрыть из таблицы')+'</button></div>';
  const problem=dialog.querySelector('.teacher-attempt-problem'),hint=dialog.querySelector('.task-review-hint');
  renderProblem(localizedPrompt(question),problem,hint);
  renderWeekTwoFormula(question,problem,hint);
@@ -982,36 +986,6 @@ function renderTeacherAttempts(question,index,ids,uid){
  for(const button of dialog.querySelectorAll('[data-shift]')){
   button.onclick=()=>renderTeacherAttempts(question,index,ids,ids[current+Number(button.dataset.shift)]);
  }
-}
-function details(n){
- if(!cloud?.isTeacher)return;
- openStudent=n;
- const panel=$('studentDetail');
- panel.hidden=false;
- const record=gradedRecord(n),answers=record.answers||{};
- const items=teacherGroup(),count=requiredCount(items);
- const archiveLabel=archivedRows()[n]?'Вернуть в таблицу':'Скрыть из таблицы';
- const rows=items.map((question,index)=>{
-  const answer=answers[question.id],attempts=answer?.attempts||[];
-  const last=attempts.at(-1);
-  const worked=Object.hasOwn(workedTrigSolutions,question.id)?workedTrigSolutions[question.id]:null;
-  const solution=question.solution||worked?.[1];
-  const correct=teacherAnswerMath(worked?.[0]??question.answer,question.format);
-  const status=answer?.manual?'Ручная оценка: '+answer.points+' балла':
-   answer?.correct?'✓ Решено ('+(answer.points??1)+' балла)':'Не решено (0 баллов)';
-  const history=attempts.length>1?'<details><summary>Все попытки</summary><ol>'+attempts.map(attempt=>
-   '<li>'+teacherAnswerMath(attempt.answer,question.format)+(attempt.correct?' ✓':' ✕')+'</li>').join('')+'</ol></details>':'';
-  const workedDetails=solution?'<details><summary>Показать решение</summary><p>'+safe(solution)+'</p></details>':'';
-  return '<div class="teacher-answer-row"><div><strong>'+(index+1)+'.</strong> '+
-   (last?teacherAnswerMath(last.answer,question.format)+(last.correct?' ✓':' ✕'):'Ответа нет')+
-   (index>=count?' <span class="task-kind bonus-column">★ Бонус</span>':'')+
-   '</div><div>Правильный ответ: '+correct+'</div>'+
-   '<div class="muted">Попыток: '+attempts.length+' · '+status+'</div>'+
-   history+workedDetails+'</div>';
- }).join('');
- panel.innerHTML='<h3>'+safe(record.name||'Ученик')+'</h3><button class="secondary" onclick="toggleStudentArchive('+
-  safe(JSON.stringify(n))+')">'+archiveLabel+'</button>'+rows+
-  '<h3>Прикреплённая работа</h3>'+filesHTML(n,$('teacherTopic').value,$('teacherGrade').value);
 }
 function download(name,data,type){let a=document.createElement('a');a.href=URL.createObjectURL(new Blob([data],{type}));a.download=name;a.click();setTimeout(()=>URL.revokeObjectURL(a.href),1000)}let excelLoader;
 function loadExcelExporter(){
@@ -1118,7 +1092,7 @@ async function teacherLogin(){
   if(teacherUnsub)teacherUnsub();
   teacherUnsub=dbAPI.onValue(dbAPI.ref(databaseInstance,'math-practice-demo/records'),snap=>{records=snap.val()||{};renderTeacher()},err=>{$('firebaseMessage').textContent='Ошибка чтения результатов: '+err.message});
   $('firebaseMessage').textContent='Вход выполнен.';
-  $('studentDetail').textContent='Вход учителя подтверждён. Выберите ученика в таблице для просмотра подробностей.';
+
   renderTeacher();
  }catch(e){$('firebaseMessage').textContent='Ошибка входа учителя: '+e.message;}
 }
@@ -1136,7 +1110,7 @@ async function setupFirebase(config){
  if(!user)user=(await authAPI.signInAnonymously(authInstance)).user;
  cloud={uid:user.uid,isTeacher:user.email?.toLowerCase()===TEACHER_EMAIL,
  saveOwnRecord:r=>dbAPI.update(dbAPI.ref(databaseInstance,'math-practice-demo/records/'+authInstance.currentUser.uid),{name:r.name,grade:r.grade,answers:r.answers||{}})};
- if(cloud.isTeacher){await user.getIdToken(true);$('studentDetail').textContent='Вход учителя подтверждён. Выберите ученика в таблице для просмотра подробностей.';renderTeacher();teacherUnsub=dbAPI.onValue(dbAPI.ref(databaseInstance,'math-practice-demo/records'),snap=>{records=snap.val()||{};renderTeacher()},err=>{$('firebaseMessage').textContent='Ошибка доступа: '+err.message});}
+ if(cloud.isTeacher){await user.getIdToken(true);renderTeacher();teacherUnsub=dbAPI.onValue(dbAPI.ref(databaseInstance,'math-practice-demo/records'),snap=>{records=snap.val()||{};renderTeacher()},err=>{$('firebaseMessage').textContent='Ошибка доступа: '+err.message});}
  else if(!teacherMode)watchStudent(user.uid);
  dbAPI.onValue(dbAPI.ref(databaseInstance,'math-practice-demo/grade11Assignments'),snap=>{assignmentsReady=true;classAssignments=snap.val()||{};if(!cloud?.isTeacher)refreshTopics();else renderTeacher()},err=>{$('firebaseMessage').textContent='Ошибка чтения назначений: '+err.message});
  const syncQuestions=(path)=>dbAPI.onValue(dbAPI.ref(databaseInstance,'math-practice-demo/'+path),snap=>{
@@ -1161,9 +1135,9 @@ async function setupFirebase(config){
  $('firebaseMessage').textContent=cloud.isTeacher?'':'Войдите через Google для просмотра результатов.';
  $('syncStatus').textContent='Firebase подключён. Доступ к данным ограничен правилами базы.';
 }
-$('studentName').value=localStorage.getItem(KEY+'_name')||'';$('grade').value=localStorage.getItem(KEY+'_class')||'11В';$('teacherGrade').onchange=()=>{$('studentDetail').hidden=true;teacherTopics();renderTeacher()};keyboard();refreshTopics();teacherTopics();renderTeacher();const DEFAULT_FIREBASE_CONFIG={"apiKey":"AIzaSyA8UMYqNT5jGy5rJg2t67ICEeYvqJ6o6T4","authDomain":"math-practice-flagman.firebaseapp.com","databaseURL":"https://math-practice-flagman-default-rtdb.firebaseio.com","projectId":"math-practice-flagman","storageBucket":"math-practice-flagman.firebasestorage.app","messagingSenderId":"752149272048","appId":"1:752149272048:web:0a4015b31cd7a859a23935"};let conf=localStorage.getItem(KEY+'_firebase');let activeConfig=DEFAULT_FIREBASE_CONFIG;if(conf){try{let parsed=JSON.parse(conf);if(parsed.projectId===DEFAULT_FIREBASE_CONFIG.projectId)activeConfig=parsed}catch(e){}}$('firebaseConfig').value=JSON.stringify(activeConfig,null,2);if(new URLSearchParams(location.search).get('teacher')==='1'){
+$('studentName').value=localStorage.getItem(KEY+'_name')||'';$('grade').value=localStorage.getItem(KEY+'_class')||'11В';$('teacherGrade').onchange=()=>{teacherTopics();renderTeacher()};keyboard();refreshTopics();teacherTopics();renderTeacher();const DEFAULT_FIREBASE_CONFIG={"apiKey":"AIzaSyA8UMYqNT5jGy5rJg2t67ICEeYvqJ6o6T4","authDomain":"math-practice-flagman.firebaseapp.com","databaseURL":"https://math-practice-flagman-default-rtdb.firebaseio.com","projectId":"math-practice-flagman","storageBucket":"math-practice-flagman.firebasestorage.app","messagingSenderId":"752149272048","appId":"1:752149272048:web:0a4015b31cd7a859a23935"};let conf=localStorage.getItem(KEY+'_firebase');let activeConfig=DEFAULT_FIREBASE_CONFIG;if(conf){try{let parsed=JSON.parse(conf);if(parsed.projectId===DEFAULT_FIREBASE_CONFIG.projectId)activeConfig=parsed}catch(e){}}$('firebaseConfig').value=JSON.stringify(activeConfig,null,2);if(new URLSearchParams(location.search).get('teacher')==='1'){
  $('student').classList.add('hide');$('teacher').classList.remove('hide');
- $('teacherTable').textContent='Проверяем вход учителя…';$('studentDetail').textContent='Загрузка данных Firebase…';
+ $('teacherTable').textContent='Проверяем вход учителя…';
 }
 setupFirebase(activeConfig).catch(e=>{$('firebaseMessage').textContent='Ошибка подключения Firebase: '+e.message});
 
