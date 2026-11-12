@@ -30,6 +30,42 @@
 .math-number-keys button{min-width:0;padding-inline:0;font-variant-numeric:tabular-nums}
 @media(max-width:720px){.math-number-keys{grid-template-columns:repeat(6,minmax(0,1fr))}}
 .answer-preview{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:10px;padding:8px 12px;background:#f3f9fb;border:1px solid #cce2ea;border-radius:9px;color:#16465f}.answer-preview[hidden]{display:none}.answer-preview span{font:600 .78rem system-ui,sans-serif}.answer-preview math{font-size:1.35rem}.problem math{font-size:1em;color:inherit}.problem-hint{margin:-12px 8px 16px;color:#476778;font-size:14px;line-height:1.5;text-align:center;white-space:pre-line}.problem-hint[hidden]{display:none}#assignedWork[hidden],#assignmentWait[hidden]{display:none!important}#practiceClosed[hidden],#timedQuestions[hidden],#timedFiles[hidden]{display:none!important}math-field.answer-editor{width:310px;max-width:100%;min-height:44px;box-sizing:border-box;padding:5px 10px;border:1px solid #b9d5df;border-radius:9px;background:white;font-size:1.35rem;--caret-color:#08789b}math-field.answer-editor:focus-within{outline:2px solid #08789b;outline-offset:1px}math-field::part(virtual-keyboard-toggle),math-field::part(menu-toggle){display:none}math-field[hidden],#answer[hidden]{display:none!important}.answer-entry{align-items:stretch;gap:10px}.answer-entry #answer,.answer-entry math-field.answer-editor{display:block;width:100%;max-width:100%;min-width:0;min-height:76px;box-sizing:border-box;padding:12px 14px;font-size:1.35rem;flex:0 0 100%;overflow-x:auto}.answer-entry>button{align-self:flex-start}@media(max-width:600px){.answer-entry #answer,.answer-entry math-field.answer-editor{min-height:68px;font-size:1.2rem}}.teacher-answer-row{padding:12px 0;border-bottom:1px solid #d3e5ed;overflow-wrap:anywhere}.teacher-answer-row math{font-size:1.2em}.teacher-answer-row details{margin-top:6px}.teacher-answer-row summary{cursor:pointer;color:#075d79}.teacher-answer-row details p{white-space:pre-line}
+
+.task-heading-button{padding:4px 6px;min-width:34px;border-radius:5px;color:inherit;background:transparent;font:inherit}
+.task-heading-button:hover,.task-heading-button:focus-visible,.task-heading-button[aria-expanded="true"]{background:#d4e8f1;color:#075d79}
+.task-review{margin:14px 0;border:1px solid #c9d3da;border-radius:8px;overflow:hidden;background:#fff;color:#183748}
+.task-review[hidden]{display:none}
+.task-review-head{margin:12px;padding:10px 12px;border:1px solid #c9d3da;border-radius:5px;display:flex;align-items:flex-start;gap:10px}
+.task-review-label{color:#075d79;font-weight:700;white-space:nowrap}
+.task-review-problem{flex:1;min-width:0;font:1rem/1.45 'STIX Two Text',Georgia,serif;white-space:pre-line;overflow-wrap:anywhere}
+.task-review-problem .worksheet-formula{margin:8px 0 0}
+.task-review-close{padding:3px 8px;color:#075d79;background:transparent;font:inherit}
+.task-review-hint{margin:0 16px 8px;font-size:.85rem;color:#4b6372}
+.task-review-key{display:flex;align-items:baseline;gap:10px 16px;flex-wrap:wrap;margin:12px 16px;overflow-wrap:anywhere}
+.task-review-key details{max-width:100%}
+.task-review-key details p{margin:6px 0;white-space:pre-line}
+.task-review-key summary{cursor:pointer;color:#00739e}
+.task-review-answer{padding:3px 8px;border-inline-start:3px solid #b93742;background:#f4f6f7}
+.task-review math{font-size:1.12em}
+.task-review-list{list-style:none;margin:0;padding:0}
+.task-review-row{display:grid;grid-template-columns:auto minmax(95px,auto) 30px minmax(0,1fr);align-items:center;gap:6px 10px;padding:5px 10px;border-top:1px solid #d4dde3;border-inline-start:4px solid transparent}
+.task-review-row:nth-child(even){background:#e8edf0}
+.task-review-row[data-result="wrong"]{border-inline-start-color:#bd313b}
+.task-review-row[data-result="correct"]{border-inline-start-color:#48843d}
+.task-review-row[data-result="partial"]{border-inline-start-color:#a96800}
+.task-review-grades{display:flex;align-items:center;gap:2px}
+.task-review-grades button,.task-review-name{background:transparent;color:#315569;padding:2px 4px;font:inherit;text-align:left}
+.task-review-name{overflow-wrap:anywhere}
+.task-review-grades button[aria-pressed="true"]{color:#126b3a;font-weight:700;background:#d4e8dd}
+.task-review-grades button[data-value="0"][aria-pressed="true"]{color:#9f232d;background:#f7d9db}
+.task-review-grades button[data-value="0.5"][aria-pressed="true"]{color:#805200;background:#f7e6bd}
+.task-review-grades button:disabled{opacity:.42}
+.task-review-attempts{justify-self:center;padding:0 6px;border:1px solid #899da9;border-radius:999px;color:#47616f;font-size:.78rem}
+.task-review-row[data-result="wrong"] .task-review-attempts{border-color:#b93742;color:#a32630}
+.task-review-entry{min-width:0;overflow-wrap:anywhere;overflow-x:auto}
+.task-review-entry details summary{cursor:pointer;color:#075d79}
+.task-review-empty{padding:0 16px 12px}
+@media(max-width:560px){.task-review-row{grid-template-columns:auto 1fr 30px}.task-review-entry{grid-column:1/-1}.task-review-head{margin:8px}.task-review-key{margin:8px}}
 </style></head><body><header><h1>📘 Math Practice <small class="muted">10 классы</small></h1></header><main class="wrap"><section id="student"><div class="panel flex"><label>Имя ученика <input id="studentName" type="text" placeholder="Имя и фамилия" maxlength="100" oninput="saveIdentity()"></label><label>Класс <select id="grade" onchange="refreshTopics()"><option value="10В">10В</option><option value="10Г">10Г</option><option value="10Д">10Д</option></select></label><select id="topic" aria-label="Текущая практика" hidden></select></div><div id="assignmentWait" class="panel" role="status">Ожидаем назначения практики учителем.</div><div id="assignedWork" hidden><div class="panel flex between"><div><b>Общее время, включая бонусы:</b> <span id="durationLabel">20 минут</span></div><div class="timerbox">⏱ <span id="practiceTimer">20:00</span></div></div><div id="practiceClosed" class="panel" role="status" hidden><strong>Время вышло. Практика закрыта.</strong><p class="muted">Учителю доступны ответы, отправленные до окончания времени.</p></div><div class="grid"><aside class="panel"><h3>Ваш прогресс</h3><div id="score"></div><p class="muted">Обязательная часть рассчитана примерно на 20 минут. ★ — бонусные задания.</p><div id="chips" class="flex" style="margin-top:16px"></div><p class="muted">✓ верно · ✕ неверно · пусто — не начато. Верно за 1–3 попытки: 1 балл; позже: 0,5.</p></aside><article id="timedQuestions" class="panel"><div class="flex between"><h2 id="number"></h2><strong id="practiceTitle" hidden></strong><span id="taskKind" class="task-kind"></span><span id="position" class="muted"></span></div><p id="instruction" class="muted">Введите точный ответ, например sqrt(5), pi/6 или 1/2.</p><div id="problem" class="problem"></div><p id="problemHint" class="problem-hint" hidden></p><label>Ответ</label><div class="flex answer-entry"><input id="answer" type="text" placeholder="Введите ответ" onkeydown="if(event.key==='Enter')check()"><button onclick="check()">Проверить ответ</button></div><div id="answerPreview" class="answer-preview" hidden><span>В математической записи</span><math id="answerMath"></math></div><div class="keyboard" id="keyboard"></div><div id="feedback" class="status" aria-live="polite"></div><div class="flex"><button class="secondary" onclick="move(-1)">← Назад</button><button onclick="move(1)">Следующая →</button></div><p id="answerListHint" class="muted">Для нескольких решений вводите ответы через запятую. Порядок не важен.</p></article></div><div id="timedFiles" class="panel"><h2>Прикрепить решение</h2><label>Фото или документ <input id="workFileInput" type="file" accept=".pdf,.png,.jpg,.jpeg,.webp,.doc,.docx,.txt" onchange="uploadWork(this)"></label><p class="muted">До 5 файлов для каждой практики, каждый до 2 МБ. PDF, фото, Word или TXT.</p><p id="workUploadStatus" role="status"></p><div id="ownWorkFiles"></div></div></div></section><section id="teacher" class="hide">
  <div class="panel">
   <div class="flex between teacher-heading"><h2>Результаты класса</h2><div class="flex">
@@ -50,7 +86,7 @@
   <p id="assignedStatus" class="muted assignment-status">Назначение загружается…</p>
   <div class="flex between results-toolbar"><p id="summary" class="muted"></p><label class="archive-toggle"><input id="showArchived" type="checkbox" onchange="toggleArchivedResults()"> Архивные работы</label></div>
   <div class="scroll" id="teacherTable"></div>
-  <div id="studentDetail" class="box" hidden></div>
+  <section id="taskReview" class="task-review" aria-label="Просмотр задания" hidden></section><div id="studentDetail" class="box" hidden></div>
  </div>
  <details class="panel teacher-extra"><summary>Задания и импорт</summary><div class="extra-content"><p class="muted">Добавляйте задачи вручную или импортируйте JSON. Импортированный набор хранится в браузере; при подключённой базе — синхронизируется между устройствами.</p><div class="flex"><input id="newTopic" type="text" placeholder="Тема"><select id="newGrade"><option value="10">10 класс</option></select></div><div class="flex" style="margin-top:8px"><input id="newPrompt" type="text" placeholder="Условие задачи"><input id="newAnswer" type="text" placeholder="Правильный ответ"><button onclick="addQuestion()">Добавить задачу</button></div><details><summary>Импорт задач из JSON</summary><p class="muted">Формат: массив объектов с полями grade, topic, prompt, answer. Импорт добавляет новые задания, сохраняя прежние.</p><input type="file" id="importFile" accept=".json,application/json" onchange="importQuestions(this)"></details><div class="flex" style="margin-top:12px"><button class="secondary" onclick="exportJSON()">Экспорт заданий JSON</button></div></div></details>
  <details class="panel teacher-extra"><summary>Технические настройки</summary><div class="extra-content">
@@ -863,14 +899,12 @@ function renderChips(){
   }
   throw Error('Unsupported notation');
  }
-function renderProblem(source){
+function renderProblem(source,problem=$('problem'),hint=$('problemHint')){
  const prompt=String(source).replace(/^\s*(?:№\s*)?\d+(?:\.\d+)*[A-Za-zА-Яа-яЁё]?[.)]\s+(?=\S)/u,'');
  const hintStart=prompt.search(/(?:^|\s)(?:Enter\b|Use\s+(?:exact values|interval notation|\[a,a\]|0\s*≤)|If\s+(?:there are no solutions|none,)|Введите(?=\s)|Округлите(?=\s)|Если\s+(?:корней|решений)\s+нет)/iu);
  const statement=hintStart>0?prompt.slice(0,hintStart).trimEnd():prompt;
- const hint=$('problemHint');
  hint.textContent=hintStart>0?prompt.slice(hintStart).trim():'';
  hint.hidden=!hint.textContent;
- const problem=$('problem');
  problem.textContent=statement;
  if(typeof math==='undefined')return;
  const atom=String.raw`(?:sqrt\([^()\n]+\)|√(?:\([^()\n]+\)|\d+(?:\.\d+)?)|\([^()\n]+\)|\d+(?:\.\d+)?(?:[πxy])?|[πxy])`;
@@ -1152,6 +1186,7 @@ async function saveManualGrade(select){
  }catch(error){
   $('firebaseMessage').textContent='Не удалось сохранить оценку: '+error.message;
   if(openStudent&&!$('studentDetail').hidden)details(openStudent);
+  if(openTeacherTask)renderTeacher();
  }finally{select.disabled=false;}
 }
 function manualGradeControl(uid,q){
@@ -1177,7 +1212,11 @@ function renderTeacher() {
  ids.sort((a, b) => scores.get(b).points - scores.get(a).points || (records[a].name || '').localeCompare(records[b].name || ''));
  $('summary').textContent = ids.length + ' учеников с результатами · ' + count + ' обязательных · ' + (questions.length-count) + ' бонусных';
  let html = '<table><thead><tr><th>Ученик</th><th>Оценка, %</th><th>Итого баллов ↓</th>';
- html += questions.map((question, index) => '<th class="' + (index>=count?'bonus-column':'') + '" title="' + safe((index>=count?'Бонус — ':'Обязательное — ') + question.prompt) + '">' + (index>=count?'★ ':'') + (index + 1) + '</th>').join('');
+ html += questions.map((question,index)=>{
+  const label=(index>=count?'★ ':'')+(index+1);
+  const active=openTeacherTask?.id===question.id&&openTeacherTask.klass===klass&&openTeacherTask.topic===topic;
+  return '<th class="'+(index>=count?'bonus-column':'')+'"><button type="button" class="task-heading-button" aria-label="Просмотр задания '+(index+1)+'" aria-controls="taskReview" aria-expanded="'+active+'" onclick="showTeacherTask('+index+')">'+label+'</button></th>';
+ }).join('');
  html += '<th>Файлы</th></tr></thead><tbody>';
  for (const uid of ids) {
   const record = gradedRecord(uid), answers = record.answers || {}, score = scores.get(uid);
@@ -1192,6 +1231,7 @@ function renderTeacher() {
   html += '<td>' + filesHTML(uid, topic, klass) + '</td></tr>';
  }
  $('teacherTable').innerHTML = html + '</tbody></table>';
+ renderTeacherTask(questions,ids,count,klass,topic);
 }
 const exactPracticeAnswers={
  "0.785398163397,3.926990816987":"pi/4,5*pi/4",
@@ -1282,8 +1322,76 @@ function teacherAnswerMath(value,format){
  const parts=text.split(format?/([;∪])/u:/([,;∪])(?![^()]*\))/u);
  return '<math>'+parts.map((part,index)=>index%2?'<mo>'+safe(part)+'</mo>':item(part)).join('')+'</math>';
 }
+let openTeacherTask=null;
+function showTeacherTask(index){
+ if(!cloud?.isTeacher)return;
+ const question=teacherGroup()[index];
+ if(!question)return;
+ openStudent=null;
+ $('studentDetail').hidden=true;
+ openTeacherTask={id:question.id,klass:$('teacherGrade').value,topic:$('teacherTopic').value};
+ renderTeacher();
+ $('taskReview').scrollIntoView({block:'nearest'});
+ $('taskReviewTitle').focus({preventScroll:true});
+}
+function closeTeacherTask(restoreFocus=true){
+ const button=$('teacherTable').querySelector('.task-heading-button[aria-expanded="true"]');
+ if(button)button.setAttribute('aria-expanded','false');
+ openTeacherTask=null;
+ const panel=$('taskReview');
+ panel.hidden=true;
+ panel.replaceChildren();
+ if(restoreFocus)button?.focus();
+}
+function renderTeacherTask(questions,ids,count,klass,topic){
+ const panel=$('taskReview');
+ if(!openTeacherTask)return;
+ const index=questions.findIndex(q=>q.id===openTeacherTask.id);
+ if(!cloud?.isTeacher||index<0||openTeacherTask.klass!==klass||openTeacherTask.topic!==topic){
+  closeTeacherTask(false);
+  return;
+ }
+ const question=questions[index],focused=document.activeElement;
+ const focusedGrade=panel.contains(focused)&&focused.matches('.task-review-grades button')?[focused.dataset.uid,focused.value]:null;
+ const solutionOpen=panel.querySelector('.task-review-key details')?.open;
+ const histories=new Set([...panel.querySelectorAll('.task-review-entry details[open]')].map(item=>item.dataset.uid));
+ const worked=Object.hasOwn(workedTrigSolutions,question.id)?workedTrigSolutions[question.id]:null;
+ const solution=question.solution||worked?.[1];
+ const key=teacherAnswerMath(exactPracticeAnswer(question),question.format);
+ const rows=ids.map(uid=>{
+  const record=gradedRecord(uid),entry=record.answers?.[question.id],attempts=entry?.attempts||[];
+  const last=attempts.at(-1),points=entry?.points??(entry?.correct?1:0);
+  const result=points===1?'correct':points===0.5?'partial':attempts.length?'wrong':'empty';
+  const name=record.name||'Ученик';
+  const controls=[['0','✕','0 баллов'],['0.5','½','Полбалла'],['1','✓','1 балл'],['','↺','Автопроверка']].map(([value,label,title])=>
+   '<button type="button" data-uid="'+safe(uid)+'" data-question="'+safe(question.id)+'" data-value="'+value+'" value="'+value+
+   '" aria-label="'+safe(title+' · '+name)+'" title="'+title+'" aria-pressed="'+(value?attempts.length>0&&Number(value)===points:attempts.length>0&&!entry?.manual)+
+   '" onclick="saveManualGrade(this)"'+(!attempts.length?' disabled':'')+'>'+label+'</button>').join('');
+  const answer=last?teacherAnswerMath(last.answer,question.format):'—';
+  const history=attempts.length>1?'<details data-uid="'+safe(uid)+'"'+(histories.has(uid)?' open':'')+'><summary>Все попытки</summary><ol>'+
+   attempts.map(item=>'<li>'+teacherAnswerMath(item.answer,question.format)+(item.correct?' ✓':' ✕')+'</li>').join('')+'</ol></details>':'';
+  return '<li class="task-review-row" data-result="'+result+'"><div class="task-review-grades">'+controls+'</div>'+
+   '<button type="button" class="task-review-name" onclick="details('+safe(JSON.stringify(uid))+')">'+safe(name)+'</button>'+
+   '<span class="task-review-attempts" title="Попыток: '+attempts.length+'">'+attempts.length+'</span>'+
+   '<div class="task-review-entry">'+answer+history+'</div></li>';
+ }).join('');
+ panel.innerHTML='<div class="task-review-head"><strong class="task-review-label" id="taskReviewTitle" tabindex="-1">'+(index>=count?'★ ':'')+'№ '+(index+1)+
+  '</strong><div class="task-review-problem" id="taskReviewProblem"></div><button type="button" class="task-review-close" aria-label="Закрыть просмотр задания" onclick="closeTeacherTask()">✕</button></div>'+
+  '<div class="task-review-hint" id="taskReviewHint" hidden></div><div class="task-review-key">'+
+  (solution?'<details'+(solutionOpen?' open':'')+'><summary>Показать решение</summary><p>'+safe(solution)+'</p></details>':'')+
+  '<div class="task-review-answer"><strong>Правильный ответ</strong> '+key+'</div></div>'+
+  (rows?'<ul class="task-review-list">'+rows+'</ul>':'<p class="task-review-empty">По этой практике пока нет результатов.</p>');
+ const problem=$('taskReviewProblem'),hint=$('taskReviewHint');
+ renderProblem(question.prompt.replace(/\b6 decimal places\b/gi,'2 decimal places'),problem,hint);
+ 
+ panel.hidden=false;
+ if(focusedGrade){
+  [...panel.querySelectorAll('.task-review-grades button')].find(button=>button.dataset.uid===focusedGrade[0]&&button.value===focusedGrade[1])?.focus({preventScroll:true});
+ }
+}
 function details(n){
  if(!cloud?.isTeacher)return;
+ closeTeacherTask(false);
  openStudent=n;
  const panel=$('studentDetail');
  panel.hidden=false;
