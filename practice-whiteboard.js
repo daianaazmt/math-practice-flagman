@@ -3,6 +3,8 @@
  const board=document.getElementById('whiteboardPanel');
  const canvas=document.getElementById('whiteboardCanvas');
  const fullscreen=typeof board.showModal==='function';
+ const problem=document.getElementById('taskProblemPanel');
+ const answer=document.getElementById('taskAnswerPanel');
  const context=canvas.getContext('2d');
  if(!context)return;
  const questionButton=document.getElementById('showTaskAnswer');
@@ -65,9 +67,14 @@
    if(!visible&&board.open)board.close();
   }else{
    board.hidden=!visible;
-   document.getElementById('taskAnswerPanel').hidden=visible;
-   questionButton.setAttribute('aria-pressed',String(!visible));
-   boardButton.setAttribute('aria-pressed',String(visible));
+   answer.hidden=visible;
+   if(problem){
+    problem.hidden=visible;
+    boardButton.textContent=visible?'← К заданию':'Белая доска';
+   }else{
+    questionButton?.setAttribute('aria-pressed',String(!visible));
+    boardButton.setAttribute('aria-pressed',String(visible));
+   }
   }
   if(visible)redraw();
   updateTools();
@@ -109,10 +116,10 @@
  for(const type of ['pointercancel','lostpointercapture']){
   canvas.addEventListener(type,event=>{if(event.pointerId===pointer)finish();});
  }
- questionButton.onclick=()=>setMode(false);
+ if(questionButton)questionButton.onclick=()=>setMode(false);
  board.addEventListener('cancel',event=>{event.preventDefault();setMode(false);});
  board.addEventListener('close',()=>{if(!board.open&&visible)setMode(false);});
- boardButton.onclick=()=>setMode(true);
+ boardButton.onclick=()=>setMode(problem?!visible:true);
  pen.onclick=()=>{tool='pen';updateTools();};
  eraser.onclick=()=>{tool='eraser';updateTools();};
  undo.onclick=()=>{finish();strokes().pop();redraw();updateTools();};
