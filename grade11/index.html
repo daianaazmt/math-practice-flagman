@@ -69,7 +69,7 @@
 .task-review-entry{min-width:0;overflow-wrap:anywhere;overflow-x:auto}
 .task-review-entry details summary{cursor:pointer;color:#075d79}
 .task-review-empty{padding:0 16px 12px}
-@media(max-width:560px){.task-review-row{grid-template-columns:auto 1fr 30px}.task-review-entry{grid-column:1/-1}.task-review-key{margin:8px}}
+@media(max-width:560px){.task-review-key{margin:8px}}
 
 #teacherTable th,#teacherTable td{padding:4px 6px;font-size:.85rem;white-space:nowrap}
 #teacherTable tbody tr:nth-child(even){background:#eef1f3}
@@ -115,7 +115,7 @@
 .chat-form textarea{min-width:0;width:100%;box-sizing:border-box;resize:vertical;padding:8px;border:1px solid #bad2df;border-radius:8px;font:inherit}
 .chat-status{min-height:1em;color:#526b7b;font-size:.85rem}
 @media(max-width:420px){.chat-form{grid-template-columns:1fr}.chat-form button{justify-self:end}}
-.task-review-row{grid-template-columns:52px minmax(92px,clamp(102px,24vw,180px)) 30px minmax(0,1fr);gap:4px 7px;min-height:28px;padding:3px 8px;font-size:.88rem}
+.task-review-row{grid-template-columns:52px clamp(92px,28vw,180px) 30px minmax(0,1fr);gap:4px 7px;min-height:28px;padding:3px 8px;font-size:.88rem}
 .task-review-row[data-result="correct"],.task-review-row[data-result="partial"]{border-inline-start-color:transparent}
 .task-review-grades{gap:0}
 .task-review-grades button{width:17px;min-width:0;min-height:0;padding:2px 0;text-align:center;line-height:1.2;color:#6d818d;background:transparent}
@@ -126,8 +126,7 @@
 .task-review-name{padding:0;text-align:left}
 .task-review-attempts{min-width:24px;min-height:0;line-height:1.2;padding:1px 5px;background:transparent}
 .task-review-retried{border-color:#bd7200;color:#945800}
-@media(max-width:360px){.task-review-row{grid-template-columns:52px minmax(0,1fr) 30px}.task-review-entry{grid-column:2/-1}}
-@media(min-width:361px) and (max-width:560px){.task-review-entry{grid-column:auto}}
+@media(max-width:360px){.task-review-row{grid-template-columns:46px 84px 25px minmax(0,1fr);gap:4px}.task-review-grades button{width:15px}}
 </style></head><body data-practice-grade="11"><header><h1>📘 Математический практикум <small class="muted">11 классы</small></h1></header><main class="wrap"><section id="student"><div class="panel flex"><label>Имя ученика <input id="studentName" type="text" placeholder="Имя и фамилия" maxlength="100" oninput="saveIdentity()"></label><label>Класс <select id="grade" onchange="refreshTopics()"><option value="11В">11В</option><option value="11Г">11Г</option><option value="11Д">11Д</option></select></label><select id="topic" aria-label="Текущая практика" hidden></select><button type="button" id="openStudentChat" class="secondary">Написать учителю</button></div><div id="assignmentWait" class="panel" role="status">Ожидаем назначения практики учителем.</div><div id="assignedWork" hidden><div class="panel flex between"><div><b>Общее время, включая бонусы:</b> <span id="durationLabel">20 минут</span></div><div class="timerbox">⏱ <span id="practiceTimer">20:00</span></div></div><div id="practiceClosed" class="panel" role="status" hidden><strong>Время вышло. Практика закрыта.</strong><p class="muted">Учителю доступны ответы, отправленные до окончания времени.</p></div><div class="grid"><aside class="panel"><h3>Ваш прогресс</h3><div id="score"></div><p class="muted">Обязательная часть рассчитана примерно на 20 минут. ★ — бонусные задания.</p><div id="chips" class="flex" style="margin-top:16px"></div><p class="muted">✓ верно · ✕ неверно · пусто — не начато. Верно за 1–3 попытки: 1 балл; позже: 0,5.</p></aside><article id="timedQuestions" class="panel"><div class="flex between"><h2 id="number"></h2><span id="taskKind" class="task-kind"></span><span id="position" class="muted"></span></div><p id="instruction" class="muted">Введите точный ответ, например sqrt(5), pi/6 или 1/2.</p><div id="problem" class="problem"></div><p id="problemHint" class="problem-hint" hidden></p><label>Ответ</label><div class="flex answer-entry"><input id="answer" type="text" placeholder="Введите ответ" onkeydown="if(event.key==='Enter')check()"><button onclick="check()">Проверить ответ</button></div><div id="answerPreview" class="answer-preview" hidden><span>В математической записи</span><math id="answerMath"></math></div><div class="keyboard" id="keyboard"></div><div id="feedback" class="status" aria-live="polite"></div><div class="flex"><button class="secondary" onclick="move(-1)">← Назад</button><button onclick="move(1)">Следующая →</button></div><p id="answerListHint" class="muted">Для нескольких решений вводите ответы через запятую. Порядок не важен.</p></article></div><div id="timedFiles" class="panel"><h2>Прикрепить решение</h2><label>Фото или документ <input id="workFileInput" type="file" accept=".pdf,.png,.jpg,.jpeg,.webp,.doc,.docx,.txt" onchange="uploadWork(this)"></label><p class="muted">До 5 файлов для каждой практики, каждый до 2 МБ. PDF, фото, Word или TXT.</p><p id="workUploadStatus" role="status"></p><div id="ownWorkFiles"></div></div></div></section><section id="teacher" class="hide">
  <div class="panel">
   <div class="flex between teacher-heading"><h2>Результаты класса</h2><div class="flex">
