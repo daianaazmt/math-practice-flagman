@@ -870,9 +870,9 @@ function startTopic(){selected=0;renderStudent()}function getRec(){
  const answers=record.answers||{};
  if(studentReviewUid!==uid)return answers;
  const graded={...answers};
- for(const [id,entry] of Object.entries(answers)){
-  const points=studentReviews[manualKey(id)]?.points;
-  if([0,0.5,1].includes(points))graded[id]={...entry,points,correct:points>0,manual:true};
+ for(const question of group()){
+  const id=question.id,points=studentReviews[manualKey(id)]?.points;
+  if([0,0.5,1].includes(points))graded[id]={...answers[id],points,correct:points>0,manual:true};
  }
  return graded;
 }const REQUIRED_BUDGET_SECONDS=20*60;
@@ -1014,7 +1014,7 @@ return a.every(([type,...values])=>{
  records[uid]??={name,grade:$('grade').value,answers:{}};if(records[uid].grade!==$('grade').value){records[uid].answers={}}records[uid].name=name;records[uid].grade=$('grade').value;records[uid].answers??={};records[uid].answers[q.id]??={attempts:[],correct:false};records[uid].answers[q.id].attempts.push({answer:input,correct,time:new Date().toISOString()});if(correct&&!records[uid].answers[q.id].correct){records[uid].answers[q.id].points=records[uid].answers[q.id].attempts.length<=3?1:0.5}records[uid].answers[q.id].correct ||=correct;store();$('feedback').className='status '+(correct?'green':'red');$('feedback').textContent=correct?'✓ Правильно!':'✕ Пока неверно. Попробуйте ещё раз.';const items=group();renderStudentScore(items,getRec(),requiredCount(items));renderChips()}
 function renderChips(){
  const answers=getRec(),items=group(),count=requiredCount(items);
- $('chips').innerHTML=items.map((q,i)=>`<button class="chip ${i===selected?'active':''} ${i>=count?'bonus':''} ${answers[q.id]?.correct?'ok':answers[q.id]?.attempts?.length?'bad':''}" title="${i>=count?'Бонусное':'Обязательное'} задание${answers[q.id]?.manual?' · Оценка учителя: '+String(answers[q.id].points).replace('.',',')+' / 1':''}" onclick="selected=${i};renderStudent()">${i>=count?'★ ':''}${i+1}${answers[q.id]?.manual?' ✎':''}</button>`).join('');
+ $('chips').innerHTML=items.map((q,i)=>`<button class="chip ${i===selected?'active':''} ${i>=count?'bonus':''} ${answers[q.id]?.correct?'ok':(answers[q.id]?.attempts?.length||answers[q.id]?.manual)?'bad':''}" title="${i>=count?'Бонусное':'Обязательное'} задание${answers[q.id]?.manual?' · Оценка учителя: '+String(answers[q.id].points).replace('.',',')+' / 1':''}" onclick="selected=${i};renderStudent()">${i>=count?'★ ':''}${i+1}${answers[q.id]?.manual?' ✎':''}</button>`).join('');
 }
  const row=content=>'<mrow>'+content+'</mrow>';
  function renderMathNode(node){
@@ -1332,8 +1332,12 @@ function gradedRecord(uid,items=teacherGroup()){
  return {...record,answers};
 }
 const reviewBackfill=new Set();
+function canGradeSubmission(record,question,klass){
+ return !!record&&record.grade===klass&&!!question&&
+  (!!record.answers?.[question.id]?.attempts?.length||workFiles(record,question.topic,klass).length>0);
+}
 function reviewPayload(entry,points){
- return {points,attemptTime:String(entry.attempts?.at(-1)?.time||'').slice(0,40),reviewedAt:new Date().toISOString()};
+ return {points,attemptTime:String(entry?.attempts?.at(-1)?.time||'').slice(0,40),reviewedAt:new Date().toISOString()};
 }
 function publishPreviousManualGrades(){
  if(!cloud?.isTeacher||!dbAPI||!databaseInstance)return;
@@ -1346,7 +1350,7 @@ function publishPreviousManualGrades(){
    let id;
    try{id=decodeURIComponent(key);}catch{continue;}
    const entry=record.answers?.[id];
-   if(!entry?.attempts?.length)continue;
+   if(!entry?.attempts?.length&&!canGradeSubmission(record,questions.find(q=>q.id===id),record.grade))continue;
    const token=uid+'/'+key;
    if(reviewBackfill.has(token))continue;
    reviewBackfill.add(token);
@@ -1371,13 +1375,14 @@ function watchManualGrades(){
 async function saveManualGrade(select){
  if(!cloud?.isTeacher||!dbAPI||!databaseInstance)return;
  const {uid,question}=select.dataset;
- if(!records[uid]?.answers?.[question]?.attempts?.length||!teacherGroup().some(q=>q.id===question))return;
+ const record=records[uid],item=teacherGroup().find(q=>q.id===question),klass=$('teacherGrade').value;
+ if(!canGradeSubmission(record,item,klass))return;
  const value=select.value;
  if(!['','0','0.5','1'].includes(value))return;
  select.disabled=true;
  try{
   const key=uid+'/'+manualKey(question),points=value===''?null:Number(value);
-  const review=points===null?null:reviewPayload(records[uid].answers[question],points);
+  const review=points===null?null:reviewPayload(record.answers?.[question],points);
   await dbAPI.update(dbAPI.ref(databaseInstance,'math-practice-demo'),{
    ['teacherGrades/10/'+key]:points,
    ['teacherReviews/'+key]:review
@@ -1592,13 +1597,14 @@ function renderTeacherTaskBody(panel,question,ids,index){
  const rows=ids.map(uid=>{
   const record=gradedRecord(uid),entry=record.answers?.[question.id],attempts=entry?.attempts||[];
   const last=attempts.at(-1),points=entry?.points??(entry?.correct?1:0);
-  const result=points===1?'correct':points===0.5?'partial':attempts.length?'wrong':'empty';
+  const result=points===1?'correct':points===0.5?'partial':attempts.length||entry?.manual?'wrong':'empty';
   const name=record.name||'Ученик';
+  const klass=$('teacherGrade').value,canGrade=canGradeSubmission(records[uid],question,klass);
   const controls=[['0','✕','0 баллов'],['0.5','½','Полбалла'],['1','✓','1 балл']].map(([value,label,title])=>
    '<button type="button" data-uid="'+safe(uid)+'" data-question="'+safe(question.id)+'" data-value="'+value+'" value="'+value+
-   '" aria-label="'+safe(title+' · '+name)+'" title="'+title+'" aria-pressed="'+(attempts.length>0&&Number(value)===points)+
-   '" onclick="saveManualGrade(this)"'+(!attempts.length?' disabled':'')+'>'+label+'</button>').join('');
-  const answer=last?teacherAnswerMath(last.answer,question.format):'—';
+   '" aria-label="'+safe(title+' · '+name)+'" title="'+title+'" aria-pressed="'+((attempts.length>0||entry?.manual)&&Number(value)===points)+
+   '" onclick="saveManualGrade(this)"'+(!canGrade?' disabled':'')+'>'+label+'</button>').join('');
+  const answer=last?teacherAnswerMath(last.answer,question.format):canGrade?filesHTML(uid,question.topic,klass):'—';
   return '<li class="task-review-row" data-result="'+result+'"><div class="task-review-grades">'+controls+'</div>'+
    '<button type="button" class="task-review-name" data-uid="'+safe(uid)+'" onclick="showTeacherAttempts(this,'+index+')">'+safe(name)+'</button>'+
    '<button type="button" class="task-review-attempts'+(attempts.length>1&&result==='correct'?' task-review-retried':'')+'" data-uid="'+safe(uid)+'" aria-label="Попытки: '+safe(name)+'" onclick="showTeacherAttempts(this,'+index+')">'+attempts.length+'</button>'+
