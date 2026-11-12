@@ -830,7 +830,19 @@ function saveIdentity(){
  const record=records[cloud?.uid];
  if(record?.name&&!sameStudent(record)&&$('studentName').value.trim())$('feedback').textContent='Ответы под этим именем будут сохранены отдельно.';
 }function group(){return questions.filter(q=>q.grade===gradeLevel($('grade').value)&&q.topic===$('topic').value)}function gradeLevel(c){return String(c).slice(0,2)}
-let classAssignments={},assignmentsReady=false;
+let classAssignments={},assignmentTimerVersions={},assignmentsReady=false;
+function readClassAssignments(value){
+ const assignments={},versions={};
+ for(const [klass,entry] of Object.entries(value||{})){
+  const topic=typeof entry==='string'?entry:entry?.topic;
+  if(typeof topic!=='string'||!topic)continue;
+  assignments[klass]=REPLACED_WEEK_FOUR_TOPICS[topic]||topic;
+  if(typeof entry?.timerVersion==='string')versions[klass]=entry.timerVersion;
+ }
+ classAssignments=assignments;
+ assignmentTimerVersions=versions;
+ assignmentsReady=true;
+}
 function assignmentOpen(){
  return cloudReady&&assignmentsReady&&!cloud?.isTeacher&&!!$('topic').value&&classAssignments[$('grade').value]===$('topic').value&&!!$('studentName').value.trim();
 }
@@ -1144,7 +1156,7 @@ function keyboard(){
  setupFormulaAnswer();
 }
 const TIMER_KEY='flagman_assigned_practice_timer_v2';let timerHandle=null;function timerTopicKey(){return gradeLevel($('grade').value)+'|'+$('topic').value}let practiceDurations={};
-function durationFor(grade,topic){return Math.max(1,Math.min(180,Number(practiceDurations[durationKey(topic)])||20))}function currentTimer(){const minutes=durationFor(gradeLevel($('grade').value),$('topic').value);const record=records[cloud?.uid];if(!$('studentName').value.trim()||(record?.name&&(!sameStudent(record)||record.grade!==$('grade').value)))return {remaining:minutes*60000,minutes};let key=TIMER_KEY+'|'+(cloud?.uid||'local')+'|'+$('grade').value+'|'+timerTopicKey();let data;try{data=JSON.parse(localStorage.getItem(key))}catch(e){}if(!data||!Number.isFinite(data.started)){data={started:Date.now()};localStorage.setItem(key,JSON.stringify(data))}return {remaining:Math.max(0,minutes*60000-(Date.now()-data.started)),minutes}}function updatePracticeTimer(){
+function durationFor(grade,topic){return Math.max(1,Math.min(180,Number(practiceDurations[durationKey(topic)])||20))}function currentTimer(){const minutes=durationFor(gradeLevel($('grade').value),$('topic').value);const record=records[cloud?.uid];if(!$('studentName').value.trim()||(record?.name&&(!sameStudent(record)||record.grade!==$('grade').value)))return {remaining:minutes*60000,minutes};let key=TIMER_KEY+'|'+(cloud?.uid||'local')+'|'+$('grade').value+'|'+timerTopicKey();const version=assignmentTimerVersions[$('grade').value];if(version)key+='|'+version;let data;try{data=JSON.parse(localStorage.getItem(key))}catch(e){}if(!data||!Number.isFinite(data.started)){data={started:Date.now()};localStorage.setItem(key,JSON.stringify(data))}return {remaining:Math.max(0,minutes*60000-(Date.now()-data.started)),minutes}}function updatePracticeTimer(){
  if(!assignmentOpen())return;
  const timer=currentTimer(),seconds=Math.ceil(timer.remaining/1000),closed=timer.remaining<=0;
  $('durationLabel').textContent=timer.minutes+' минут';
@@ -1158,7 +1170,7 @@ function durationFor(grade,topic){return Math.max(1,Math.min(180,Number(practice
  if(submit?.tagName==='BUTTON')submit.disabled=closed;
  $('workFileInput').disabled=closed||uploadingWork;
 }
-async function assignPractice(){if(!cloudReady||!cloud?.isTeacher||!dbAPI||!databaseInstance){alert('Для назначения практики войдите через Google в подключённом Firebase.');return}let klass=$('teacherGrade').value,topic=$('teacherTopic').value;if(!topic)return;try{await dbAPI.set(dbAPI.ref(databaseInstance,'math-practice-demo/grade10Assignments/'+klass),topic);classAssignments[klass]=topic;renderTeacher();alert('Назначено для '+klass+': '+practiceLabel(topic))}catch(e){alert('Firebase не разрешил назначение: '+e.message+'; проверьте правила доступа базы.')}}async function setPracticeDuration(){
+async function assignPractice(){if(!cloudReady||!cloud?.isTeacher||!dbAPI||!databaseInstance){alert('Для назначения практики войдите через Google в подключённом Firebase.');return}let klass=$('teacherGrade').value,topic=$('teacherTopic').value;if(!topic)return;try{const ref=dbAPI.ref(databaseInstance,'math-practice-demo/grade10Assignments/'+klass);const timerVersion=dbAPI.push(ref).key;await dbAPI.set(ref,{topic,timerVersion});classAssignments[klass]=topic;assignmentTimerVersions[klass]=timerVersion;renderTeacher();alert('Назначено для '+klass+': '+practiceLabel(topic))}catch(e){alert('Firebase не разрешил назначение: '+e.message+'; проверьте правила доступа базы.')}}async function setPracticeDuration(){
  if(!cloudReady||!cloud?.isTeacher||!cloud.saveDuration){alert('Войдите как учитель через Google');return;}
  const topic=$('teacherTopic').value,minutes=Number($('teacherDuration').value);
  if(!topic){alert('Сначала выберите практику');return;}
@@ -1716,7 +1728,7 @@ async function setupFirebase(config){
  else if(!teacherMode)watchStudent(user.uid);
  dbAPI.onValue(dbAPI.ref(databaseInstance,'math-practice-demo/questions'),snap=>{if(snap.exists()){let data=snap.val();questions=mergePractices([...questions,...(Array.isArray(data)?data:Object.values(data)).filter(q=>String(q.grade)==='10')]);refreshTopics();if(cloud.isTeacher)renderTeacher()}},err=>{$('firebaseMessage').textContent='Ошибка чтения заданий: '+err.message});
  dbAPI.onValue(dbAPI.ref(databaseInstance,'math-practice-demo/grade10Extras'),snap=>{if(snap.exists()){let data=snap.val();questions=mergePractices([...questions,...(Array.isArray(data)?data:Object.values(data)).filter(q=>String(q.grade)==='10')]);refreshTopics();if(cloud.isTeacher)renderTeacher()}},err=>{$('firebaseMessage').textContent='Ошибка синхронизации новых заданий: '+err.message});
- dbAPI.onValue(dbAPI.ref(databaseInstance,'math-practice-demo/grade10Assignments'),snap=>{assignmentsReady=true;classAssignments=Object.fromEntries(Object.entries(snap.val()||{}).map(([klass,topic])=>[klass,REPLACED_WEEK_FOUR_TOPICS[topic]||topic]));if(cloud.isTeacher)renderTeacher();else refreshTopics()},err=>{$('firebaseMessage').textContent='Нет доступа к назначениям: '+err.message});
+ dbAPI.onValue(dbAPI.ref(databaseInstance,'math-practice-demo/grade10Assignments'),snap=>{readClassAssignments(snap.val());if(cloud.isTeacher)renderTeacher();else refreshTopics()},err=>{$('firebaseMessage').textContent='Нет доступа к назначениям: '+err.message});
  dbAPI.onValue(dbAPI.ref(databaseInstance,'math-practice-demo/grade10Durations'),snap=>{practiceDurations=snap.val()||{};if(cloud.isTeacher)renderTeacher();else updatePracticeTimer()},err=>{$('firebaseMessage').textContent='Ошибка синхронизации таймера: '+err.message});
  cloudReady=true;
  window.dispatchEvent(new Event('practice-chat-session'));
