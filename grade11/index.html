@@ -402,11 +402,11 @@
  {"id":"G11-W02-L2-Q34","grade":"11","topic":"2.2.2. Laws of rational exponents","prompt":"Write the correct expansion of the expression on the left.","answer":"x+16+64/x","answerVariables":["x"],"estimatedSeconds":150},
  {"id":"G11-W02-L2-Q35","grade":"11","topic":"2.2.2. Laws of rational exponents","prompt":"Simplify using power laws. Assume x > 0.","answer":"(64/9)*x^(13/2)","answerVariables":["x"],"estimatedSeconds":195},
  {"id":"G11-W02-L2-Q36","grade":"11","topic":"2.2.2. Laws of rational exponents","prompt":"Find r so the identity holds for all positive x.","answer":"11/3","answerVariables":[],"estimatedSeconds":195},
- {"id":"G11-W02-L3-Q01","grade":"11","topic":"2.2.3. Factoring expressions with fractional powers","prompt":"Factor and simplify. Enter the simplified expression and the excluded positive value of x.","answer":"x^(1/3)+3; 27","answerVariables":["x"],"estimatedSeconds":105},
- {"id":"G11-W02-L3-Q02","grade":"11","topic":"2.2.3. Factoring expressions with fractional powers","prompt":"Factor and simplify. Enter the simplified expression and the excluded positive value of x.","answer":"x^(2/3)+3*x^(1/3)+9; 27","answerVariables":["x"],"estimatedSeconds":150},
+ {"id":"G11-W02-L3-Q01","grade":"11","topic":"2.2.3. Factoring expressions with fractional powers","prompt":"Factor and simplify.","answer":"x^(1/3)+3","answerVariables":["x"],"estimatedSeconds":105,"optionalExcludedValue":"27"},
+ {"id":"G11-W02-L3-Q02","grade":"11","topic":"2.2.3. Factoring expressions with fractional powers","prompt":"Factor and simplify.","answer":"x^(2/3)+3*x^(1/3)+9","answerVariables":["x"],"estimatedSeconds":150,"optionalExcludedValue":"27"},
  {"id":"G11-W02-L3-Q03","grade":"11","topic":"2.2.3. Factoring expressions with fractional powers","prompt":"Factor and simplify for positive x. Enter the simplified expression and the excluded positive value of x.","answer":"sqrt(x)-4; 9","answerVariables":["x"],"estimatedSeconds":150},
  {"id":"G11-W02-L3-Q04","grade":"11","topic":"2.2.3. Factoring expressions with fractional powers","prompt":"Factor completely in fractional powers.","answer":"x^(1/4)*(sqrt(x)-3)*(sqrt(x)-4)","answerVariables":["x"],"estimatedSeconds":150,"requireProduct":true},
- {"id":"G11-W02-L3-Q05","grade":"11","topic":"2.2.3. Factoring expressions with fractional powers","prompt":"Simplify for positive x. Enter the result and the excluded positive value of x.","answer":"0; 27","answerVariables":[],"estimatedSeconds":195},
+ {"id":"G11-W02-L3-Q05","grade":"11","topic":"2.2.3. Factoring expressions with fractional powers","prompt":"Simplify for positive x.","answer":"0","answerVariables":[],"estimatedSeconds":195,"optionalExcludedValue":"27"},
  {"id":"G11-W02-L3-Q06","grade":"11","topic":"2.2.3. Factoring expressions with fractional powers","prompt":"Find k that allows cancellation, then give the simplified expression for positive x. Enter k first.","answer":"7; x^(1/3)+4","answerVariables":["","x"],"estimatedSeconds":195},
  {"id":"G11-W02-L3-Q07","grade":"11","topic":"2.2.3. Factoring expressions with fractional powers","prompt":"Factor and simplify. Enter the simplified expression and the excluded positive value of x.","answer":"x^(1/3)+4; 64","answerVariables":["x"],"estimatedSeconds":105},
  {"id":"G11-W02-L3-Q08","grade":"11","topic":"2.2.3. Factoring expressions with fractional powers","prompt":"Factor and simplify. Enter the simplified expression and the excluded positive value of x.","answer":"x^(2/3)+4*x^(1/3)+16; 64","answerVariables":["x"],"estimatedSeconds":150},
@@ -633,6 +633,10 @@ function checkWorksheetAnswer(input,question){
  if(question.answer==='no')return /^(?:no|нет)$/i.test(input.trim());
  const expected=question.answer.split(';');
  const parts=splitAnswerParts(input,';,');
+ if(question.optionalExcludedValue && parts.length===expected.length+1){
+  const excluded=parts.pop().trim().replace(/^x\s*(?:≠|!=|=)\s*/i,'');
+  if(!excluded || !equivalent(excluded,question.optionalExcludedValue))return false;
+ }
  if(parts.length!==expected.length)return false;
  return parts.every((part,index)=>{
   const value=part.trim().replace(/^[A-Za-z]\s*(?:≠|!=|=)\s*/, '');
