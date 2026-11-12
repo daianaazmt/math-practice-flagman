@@ -2,6 +2,7 @@
  const switcher=document.getElementById('whiteboardSwitch');
  const board=document.getElementById('whiteboardPanel');
  const canvas=document.getElementById('whiteboardCanvas');
+ const fullscreen=typeof board.showModal==='function';
  const context=canvas.getContext('2d');
  if(!context)return;
  const questionButton=document.getElementById('showTaskAnswer');
@@ -59,10 +60,16 @@
   finish();
   visible=showBoard&&key!==null;
   boardButton.setAttribute('aria-expanded',String(visible));
-  if(visible){
-   if(!board.open)board.showModal();
-   redraw();
-  }else if(board.open)board.close();
+  if(fullscreen){
+   if(visible&&!board.open)board.showModal();
+   if(!visible&&board.open)board.close();
+  }else{
+   board.hidden=!visible;
+   document.getElementById('taskAnswerPanel').hidden=visible;
+   questionButton.setAttribute('aria-pressed',String(!visible));
+   boardButton.setAttribute('aria-pressed',String(visible));
+  }
+  if(visible)redraw();
   updateTools();
  }
  function setTask(nextScope,questionId){
