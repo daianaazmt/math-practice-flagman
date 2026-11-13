@@ -115,7 +115,7 @@
 .chat-form textarea{min-width:0;width:100%;box-sizing:border-box;resize:vertical;padding:8px;border:1px solid #bad2df;border-radius:8px;font:inherit}
 .chat-status{min-height:1em;color:#526b7b;font-size:.85rem}
 @media(max-width:420px){.chat-form{grid-template-columns:1fr}.chat-form button{justify-self:end}}
-.task-review-row{grid-template-columns:52px clamp(92px,28vw,180px) 30px minmax(0,1fr);gap:4px 7px;min-height:28px;padding:3px 8px;font-size:.88rem}
+.task-review-row{grid-template-columns:76px clamp(92px,28vw,180px) 30px minmax(0,1fr);gap:4px 7px;min-height:28px;padding:3px 8px;font-size:.88rem}
 .task-review-row[data-result="correct"],.task-review-row[data-result="partial"]{border-inline-start-color:transparent}
 .task-review-grades{gap:0}
 .task-review-grades button{width:17px;min-width:0;min-height:0;padding:2px 0;text-align:center;line-height:1.2;color:#6d818d;background:transparent}
@@ -126,7 +126,7 @@
 .task-review-name{padding:0;text-align:left}
 .task-review-attempts{min-width:24px;min-height:0;line-height:1.2;padding:1px 5px;background:transparent}
 .task-review-retried{border-color:#bd7200;color:#945800}
-@media(max-width:360px){.task-review-row{grid-template-columns:46px 84px 25px minmax(0,1fr);gap:4px}.task-review-grades button{width:15px}}
+@media(max-width:360px){.task-review-row{grid-template-columns:66px 84px 25px minmax(0,1fr);gap:4px}.task-review-grades button{width:15px}}
 .chat-unread{display:inline-block;margin-left:4px;padding:1px 6px;border-radius:999px;background:#a92b38;color:#fff;font-size:.78em;font-weight:700}.chat-unread[hidden],#chatNotifications[hidden]{display:none}#chatNotifications{margin-bottom:8px;font-size:.85rem}
 .student-progress-total{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 12px}.student-progress-total>div{flex:1 1 130px;padding:8px 10px;background:#eaf5f8;border-radius:6px}.student-progress-total b{display:block;margin-top:4px;font-size:1.3rem}.student-progress-table{overflow-x:auto}.student-progress-table th,.student-progress-table td{padding:6px;text-align:left}.student-progress-table td{white-space:nowrap}.student-progress-table small{display:block;color:#547180;font-weight:400}
 
@@ -1268,10 +1268,10 @@ function renderTeacherTaskBody(panel,question,ids,index){
   const result=points===1?'correct':points===0.5?'partial':attempts.length||entry?.manual?'wrong':'empty';
   const name=record.name||'Ученик';
   const klass=$('teacherGrade').value,canGrade=canGradeQuestion(records[uid],question,klass);
-  const controls=[['0','✕','0 баллов'],['0.5','½','Полбалла'],['1','✓','1 балл']].map(([value,label,title])=>
+  const controls=[['0','✕','0 баллов'],['0.5','½','Полбалла'],['1','✓','1 балл'],['','↺','Автопроверка']].map(([value,label,title])=>
    '<button type="button" data-uid="'+safe(uid)+'" data-question="'+safe(question.id)+'" data-value="'+value+'" value="'+value+
-   '" aria-label="'+safe(title+' · '+name)+'" title="'+title+'" aria-pressed="'+((attempts.length>0||entry?.manual)&&Number(value)===points)+
-   '" onclick="saveManualGrade(this)"'+(!canGrade?' disabled':'')+'>'+label+'</button>').join('');
+   '" aria-label="'+safe(title+' · '+name)+'" title="'+title+'" aria-pressed="'+(value===''?!entry?.manual:!!entry?.manual&&Number(value)===points)+
+   '" onclick="saveManualGrade(this)"'+(!canGrade||value===''&&!entry?.manual?' disabled':'')+'>'+label+'</button>').join('');
   const answer=last?teacherAnswerMath(last.answer,question.format):'—';
   return '<li class="task-review-row" data-result="'+result+'"><div class="task-review-grades">'+controls+'</div>'+
    '<button type="button" class="task-review-name" data-uid="'+safe(uid)+'" onclick="showTeacherAttempts(this,'+index+')">'+safe(name)+'</button>'+
