@@ -1,0 +1,28 @@
+{
+  "privateCalls": {
+    "$grade": {
+      "$uid": {
+        ".read": "($grade === '10' || $grade === '11') && ((auth != null && auth.token.email === 'daiana.koptleuova@gmail.com' && auth.token.email_verified === true && auth.token.firebase.sign_in_provider === 'google.com') || (auth != null && auth.uid === $uid && auth.token.firebase.sign_in_provider === 'anonymous'))",
+        "$call": {
+          ".write": "($grade === '10' || $grade === '11') && ((auth != null && auth.token.email === 'daiana.koptleuova@gmail.com' && auth.token.email_verified === true && auth.token.firebase.sign_in_provider === 'google.com') || ((auth != null && auth.uid === $uid && auth.token.firebase.sign_in_provider === 'anonymous') && data.exists() && newData.exists() && !data.child('ended').exists() && newData.child('offer').val() === data.child('offer').val() && newData.child('createdAt').val() === data.child('createdAt').val() && (!data.child('answer').exists() || newData.child('answer').val() === data.child('answer').val())))",
+          ".validate": "newData.hasChildren(['offer','createdAt']) && (!data.exists() || (newData.child('offer').val() === data.child('offer').val() && newData.child('createdAt').val() === data.child('createdAt').val()))",
+          "offer": {
+            ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 40000"
+          },
+          "createdAt": {
+            ".validate": "newData.isNumber() && (data.exists() ? newData.val() === data.val() : newData.val() === now)"
+          },
+          "answer": {
+            ".validate": "newData.isString() && newData.val().length > 0 && newData.val().length <= 40000 && data.parent().exists() && now - data.parent().child('createdAt').val() <= 60000"
+          },
+          "ended": {
+            ".validate": "newData.val() === true"
+          },
+          "$other": {
+            ".validate": false
+          }
+        }
+      }
+    }
+  }
+}
