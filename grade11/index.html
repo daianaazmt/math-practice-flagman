@@ -493,6 +493,53 @@ if(typeof textbookExercises!=='undefined'){
   WORKSHEET_QUESTIONS[index]=question;
  }
 }
+const openStaxExercises = [
+ [
+  "2.4.2",
+  "Датчик начинает измерения при t = 1. Его показание задаётся формулой y = 5 − 2√(t − 1) при t ≥ 1. Найди область значений y. Введи интервал.",
+  "(-∞,5]",
+  "intervals",
+  "https://openstax.org/books/college-algebra-2e/pages/5-7-inverses-and-radical-functions"
+ ],
+ [
+  "2.5.1",
+  "Высота детали над столом описывается функцией h(x) = x + 4/x при x > 0. При каком x касательная к её графику горизонтальна?",
+  "2",
+  null,
+  "https://openstax.org/books/calculus-volume-1/pages/3-3-differentiation-rules"
+ ],
+ [
+  "2.5.2",
+  "Для функции f(x) = 2 − x на отрезке [1,3] найди сначала значение определённого интеграла, затем геометрическую площадь между графиком и осью x. Введи два числа через точку с запятой.",
+  "0;1",
+  null,
+  "https://openstax.org/books/calculus-volume-1/pages/5-2-the-definite-integral"
+ ],
+ [
+  "2.6.2",
+  "После возведения обеих частей уравнения √(15 − 2x) = x в квадрат ученик получил −5 и 3. Какой из этих кандидатов является посторонним корнем?",
+  "-5",
+  null,
+  "https://openstax.org/books/college-algebra/pages/2-6-other-types-of-equations"
+ ],
+ [
+  "2.6.3",
+  "Реши уравнение 2x^(1/2) − x^(1/4) = 0. Проверь, не теряется ли решение при делении на x^(1/4). Введи все корни через точку с запятой.",
+  "0;1/16",
+  "roots",
+  "https://openstax.org/books/college-algebra/pages/2-6-other-types-of-equations"
+ ]
+];
+for(const [code,prompt,answer,format,sourceUrl] of openStaxExercises){
+ const lesson=WORKSHEET_QUESTIONS.find(q=>q.topic.startsWith(code+'. '));
+ if(!lesson)continue;
+ WORKSHEET_QUESTIONS.push({
+  id:'G11-OPENSTAX-'+code.replaceAll('.','-'),grade:'11',topic:lesson.topic,
+  prompt,answer,sourceUrl,bonusOnly:true,estimatedSeconds:150,
+  ...(format==='roots'?{unorderedRoots:true}:format?{format}:{}),
+  answerVariables:[]
+ });
+}
 const worksheetIds=new Set([...retiredWorksheetIds,...WORKSHEET_QUESTIONS.map(q=>q.id)]);
 function mergeWorksheetQuestions(questions){
  return [...questions.filter(q=>!worksheetIds.has(q.id)),...WORKSHEET_QUESTIONS];
@@ -567,6 +614,7 @@ function estimatedSeconds(question){
 function requiredCount(items){
  let seconds=0,count=0;
  for(const item of items){
+  if(item.bonusOnly)break;
   seconds+=estimatedSeconds(item)/STUDENT_PACE_MULTIPLIER;
   if(count&&seconds>REQUIRED_BUDGET_SECONDS)break;
   count++;
@@ -617,6 +665,16 @@ function equivalentExpression(input,answer,variables,positiveDomain=false,custom
  }catch(e){return false;}
 }
 function renderWorksheetFormula(question,problem=$('problem'),hint=$('problemHint')){
+ if(question.sourceUrl){
+  const link=document.createElement('a');
+  link.href=question.sourceUrl;
+  link.target='_blank';
+  link.rel='noopener noreferrer';
+  link.textContent='По материалам OpenStax';
+  hint.append(document.createTextNode(' '),link);
+  hint.hidden=false;
+  return;
+ }
  if(!question.answerVariables)return;
  const simplified=typeof simplifiedFormulaImages!=='undefined'&&simplifiedFormulaImages[question.id];
  const formula=question.textbookFormula||simplified||
