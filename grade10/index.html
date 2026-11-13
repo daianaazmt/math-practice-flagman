@@ -1018,7 +1018,7 @@ return a.every(([type,...values])=>{
  records[uid]??={name,grade:$('grade').value,answers:{}};if(records[uid].grade!==$('grade').value){records[uid].answers={}}records[uid].name=name;records[uid].grade=$('grade').value;records[uid].answers??={};records[uid].answers[q.id]??={attempts:[],correct:false};records[uid].answers[q.id].attempts.push({answer:input,correct,time:new Date().toISOString()});if(correct&&!records[uid].answers[q.id].correct){records[uid].answers[q.id].points=records[uid].answers[q.id].attempts.length<=3?1:0.5}records[uid].answers[q.id].correct ||=correct;store();$('feedback').className='status '+(correct?'green':'red');$('feedback').textContent=correct?'✓ Правильно!':'✕ Пока неверно. Попробуйте ещё раз.';const items=group();renderStudentScore(items,getRec(),requiredCount(items));renderChips()}
 function renderChips(){
  const answers=getRec(),items=group(),count=requiredCount(items);
- $('chips').innerHTML=items.map((q,i)=>`<button class="chip ${i===selected?'active':''} ${i>=count?'bonus':''} ${answers[q.id]?.correct?'ok':(answers[q.id]?.attempts?.length||answers[q.id]?.manual)?'bad':''}" title="${i>=count?'Бонусное':'Обязательное'} задание" onclick="selected=${i};renderStudent()">${i>=count?'★ ':''}${i+1}${answers[q.id]?.manual?' ✎':''}</button>`).join('');
+ $('chips').innerHTML=items.map((q,i)=>`<button class="chip ${i===selected?'active':''} ${i>=count?'bonus':''} ${answers[q.id]?.correct?'ok':(answers[q.id]?.attempts?.length||answers[q.id]?.manual)?'bad':''}" title="${i>=count?'Бонусное':'Обязательное'} задание" onclick="selected=${i};renderStudent()">${i>=count?'★ ':''}${i+1}</button>`).join('');
 }
  const row=content=>'<mrow>'+content+'</mrow>';
  function renderMathNode(node){
