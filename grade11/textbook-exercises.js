@@ -250,5 +250,65 @@ const textbookExercises = {
       281,
       36
     ]
+  ],
+  "G11-W02-L2-Q33": [
+    {
+      "prompt": "В модели для белого носорога частота сердцебиения и продолжительность жизни зависят от массы по двум показанным степенным законам. Найди показатель степени m после умножения. Масса m положительна.",
+      "answer": "-1/20",
+      "source": "Power Functions, с. 272, по примеру о белом носороге"
+    },
+    [
+      "UklGRswEAABXRUJQVlA4IMAEAABQGwCdASqmABoAPlEejUQjoaEXSZ6oOAUEtIAK8d/kH4Ad/P9V59/vf7D7AB4MfnP4q/ln7EvUk/hn6lP6z+V35EZiv+4f0D9hPyq9EnugPUz/JP6L+SH7//Mn6AeINQA/iv9K/xv28/DJ/R/mZ/jfab+W/2v/afmh9BX8m/n/+I/sn7mfv//9vuA9c3ovftAQUfMOxNUkLfdz3mjWp/8iLhWRzu5HJA91LADArWNVqPoXBgaj5wfOOo0yvcX4uqy6Dg0M1v7btXyEm4T3Q93t0jKrwYgAZ9XH3NVLn0b3HshNAAD+LdV0Gb+Q9Z844IxaRnBAimOJ1JB7jhN5rszR++XD+MaAHhtjtf6Km97jMqJgnWv0gS1s9AB24qus83zuQuMK652RRQTLf2FnEkJXWyDK1J7CiPvC3y3ub/sCMjm/adibkDud4KB1/jMJtH20g1LqKyyf3z5ckChxU6ZF+9XESGXm68oBN1u2z5mEcj4S8r9S2/17mnxILlRSgWNWa5Rij/svOWcAjirIOf7bmnP/EJMjnwpVSidUsg6ixqkxpF5mSm+1cYdsKmsGRDKGX7qYJSGzn+hduXHFW308KZ7E9eS+QGtm9yfglDjg4wVQy47Hx2lPZEqYLrM2DSebyihyNv9DidIU0NKiUmtZE39jQrbxHb8V7qNSzNir3p7MovtcdpgaTTxVcp3y/sAWOGl+fW9r28HAKHjkpMJezVtGIuVdm/VlMYcjs9oL+LWvqPhrBfU1k8MZODeXjTcGixakSBsO/vTJXUg8UtK0sVPYZHVa2nsiF2CDw1sc+lmasFdlsu4dd0XTIoMxYY16dGHAguSieIOh0k9+NI9P0rcOHivRwqdqTMo2pQC69DVw3mQAjgC+nu1HwisTVeJbJ4lK0Q79o4DiDVp9muGgMK4nsoIsZ8fj8Tog0B+8O7zr8+BHlfqCCx4aiQsv9J+rwoYf4+43EzGUZ+28OHn/PUH8yf8koAeGwk16h9jq28eJlWLhktSAcEEc2XfVgQshIuRFuu+J324pCrfVIe5TIaoSw9ayAcV4TqHeqpvasArhxZtcciJg9jqclDVhW1g5BVcMgOh4GGDW7IbnRkX6w+Qg7biG9nd/LTChMmXcbL7tqWTYY7BsQBFRMQzIXy2bJr8nffY/PauKdWtE98sqWrfiqql/Do/bOkTs+C8PdlOUi27d/oSreO7g28XLK1HhVgbr9S45OIdCInqNT/mL9j+R8Lud5Ud///iMhCHH9xi3bcyjcwE9HYnULcbMZDzrsHq9DcMkIHzP2IAS/rk145xYxLDRNJ8ZBO6wa96+Ua/rvATUupTVI5ofhx1gZZojfZqhdn3oV7nTmng5yznRAXrfHx1nOmADnaLqq8P4Z4ZXe9UC90M0jDT5SsKLneuZs96h8h/7SXYmXiIXXhbWBDOG6wPrVhW9ZhMCHVfopu///HOnMirroLAVzqCohxSZBBwR5+n4UKnP6jdMR291Nki6aqFQqeI7OZ/GbK1wb8tHBvCJObJgss6dSgGKZTdIcxTbM8+pQQl+gYP2I8snbCguWFXb5a9cwN92/xhJF9zmz82U/3LuVwuOIRmWYvLaxGvyKZMMhtnu3BTmAAAA",
+      116,
+      18
+    ]
+  ],
+  "G11-W04-L2-Q32": [
+    {
+      "prompt": "Функции E и M задают время падения на Земле и на Марсе в секундах. Сколько секунд длится падение с высоты 64 фута на Марсе?",
+      "answer": "16/5",
+      "source": "Power Functions, с. 254, пример о падении на Марсе"
+    },
+    [
+      "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",
+      267,
+      34
+    ]
+  ],
+  "G11-W06-L1-Q33": [
+    {
+      "prompt": "В решении получили 3x − 8 = 4, возведя в куб только левую часть. Исправь ошибку и введи правильное значение x.",
+      "answer": "24",
+      "source": "Power Functions, с. 266, №35"
+    },
+    [
+      "UklGRiIFAABXRUJQVlA4IBYFAADQHwCdASqsACUAPlEijkWjoiER/AcEOAUEtIALaH8IfzP8QO+X+q/iX1gXd31t8wDorczH2V+l/kj+Y3sq/ir5g+2L8l/ID3EP5F/b/yA/KLRAvUf5Z/gPx45gPlm/ID4L/zT/H8cX3B7AH8c/pX+D9k397/5/9z/ar1g/lX9g/3X+K/dD6BP4//QP8z/bf3g/vn/////3Hetn9pPY5/YkLFcPnPE+K9omA+KGLJmmjm4PRTyFYLKLcXpc7JXSBAfvov3/rz/T87uuTkSAjgI0KUBnmeFRSPJSFpnRYjGZl+2G2OcaDy8Jl/u/wPGPqdvPdiTTLanLQFLaEE7TFH+Ha51+rPgfAAD+qWnevKMBr6muw2Wiz0bU057Xfv5NXV0wZ0ku35g/SNsaxUIF0INZ61eFL8FkpYw5i/CXbb+9fOEU0C5dUyBGVCVbwyOO97a31J1ntZIw5Wf9JMET7xChZdnG+ZmtxMeDEaRsUpNLtjPeMuWYPBuai7RWOAlhjCj4mOLULhtVjoOecEMKHzviMwoFA/ApjBZmefSzaGRR+nio4AwablE+gM3IUmpQ/H4SJ7U+enEFd6yP0xTKEt4VwmFA6DXcfKCIpETXPaU2nv8o3hGd5irzU9EulRSwT6wMIO8SQenJ/1H//IeDWVt8Prx6lW1fRh1kJLGKMkz/pElf/gpvzxuSHoXESrjtOKTkjRsX/PvULcimOi448YPI2Lw+djNARdw5P5QC5P4l7IsvH6X1CWUahs9qfR+w8MEeYDdg401pgkezHLpXxf19tgLNilQuFKC9f2WtN5KZdt5CPoemiOGcmbCVDpzEy6UMBjsCJ1ajRN4R3534Uzb1QspcFdkqOBU4iBedoUVvzapUiSJ3tEEUc3bqRXFjFW1zGagHNwfqH80EC3ysk3GzzZkPzSHx3qWXb/+76B1qCgJypbRRAkn/x9z80mg6kF/+67BYpxFgPDvvXU/L1Mv4rnUpd3NF8m1LroW4g3aPs68YH3GxBEJzE090VuRMTUsRuc7qlK7J9b1AY8ERqiliQYG29EjomtmicuC0nSqjGu60gffX8b1WY9fCf2LNHuYegzvPCdf3cCtDqfswWbe1fDDKV54mj0Aa5bP68MncX71gTspUBvTL2iF3t0Hnb1eyOs1VD0yrVnN8h4cmbzlxEwSzDrJB2ucTf/uXLx7po9MYWvJuUFFsj7vjWy5xnRq9C8MO8uDxYNl7062z0Ii+ogmF02rByf7tJjtgxmkQ9R/kAE+pPrhj7vGg2b3y/xhcI+VePZBJyv6zwjMGVwtZwLmv4mRskMnLRuYNxWSNP7N05iBigZkd8wt5urST6TGOV8+JwwxNPZpnZh7pnokn8rWcJADvJqvBvpmU+ttC2nKNgR675QzU7gdI43y1C32CA+1vzsdzmw527MdCvaWvXFQ2fcysjtvTjv6SBKCl24mMSbnlrrXxfCWq/gf6PFRo8tvIgprCOP0EVrghc3/8SpDxiwXVKakCsGXACyMItg/5N0p/zkSemIpxj82VC8eygJAAcs//mDJjk/wkfqV3J9fNNdKTjCPao6XC59Nh884QG2fkd2e+Hn9m9YBZAnqMHjAcy68YkbL6qAyAewVzZ49fxiQES30z1EsLfJwWrOFgZl5ydz7lNv2c3XlMeWyvHlc64LbjmB1ZNoz2IlSIZS9piNJ4y8EzoYPQVJVIsATSKXBwuDXhK0IMyM4oF64jsQAAAAA=",
+      120,
+      26
+    ]
+  ],
+  "G11-W07-L3-Q32": [
+    {
+      "prompt": "Для концерта планируют круговую площадку на 24 человека. На каждого нужно 6 квадратных футов. Найди минимальный радиус r в футах.",
+      "answer": "12/sqrt(pi)",
+      "source": "Power Functions, с. 268, по №60"
+    },
+    [
+      "UklGRgIFAABXRUJQVlA4IPYEAACQHgCdASqdACAAPlEgjkSjoaEWbAUAOAUEtIAK8t/kv4geBH9C/G/9se1k78ex+6RfwHkY+t30r8l/ym9iX8K/MH0m+gn/Ef6P+Qv7cf67OfflP9q/H38h9lB/Tf61+YvM+97ewB/Ef51/sPyk/x30l/u//A/wn5Qez78x/vv/C/wnwFfyb+b/47+w/uh/jf//4jP2I9iX9b18gC27ynoNRSaL4nEf0JaxxSi2n1leqatDmN29kyVhMPJ+4BfIiT4VJ0YcCf6oXWm2dVK4ySZt/Js60r1TXyaYKbSiAgMKWZS8BTfGDvuZrMFL9wJq4haGOWvRXtjdngbPuGcgAP7+JoTP2cSfD+dLZuxsRDPvzw4z5XoVZ9/aq2bRH9zHib/PBPFU8BEH53o6axzCicnN0HeleUBKQf3hfzjXn/fbRKmbMqAn/MCF9yEfknbPt9fuIdSrqyLyul3Fb9n9zabEe7vWfP2xl8jp7kCtO92YYAP//DehdI59vfvHc2s9h8bHBz2IfXfBhVAXWGlBh7nsgqnBid939/KzGVYIzqBQMc9/O0IjCOniN9hX9kuMbhqMDyq4Y8pGHoUCPt3PL+PwPWcV9XFXMZffYpjjiPBNcRYmiTwnjr3dEcJN4GEO6o/81o+zpks4IvMVvv7REfHqLJ50krtOzK61V8wHBJUUxPhX+356dW0beQeBFJ4h2Px9jl0pbzH4dxTYVqWfQc6dKcc8U6m/V8ncbSG3A/IVd+IQ7x/3VgJw3kSd51oXMdHnLO4XZ5QXNjICgyrUgPvF0HPl5MVrqDpRpgkKVS7kmubyTD7Tj8r3Kw1y4aSzRJrhXjohP+HE6ZaQIPK1qdQU0uQTLU5JNiex79hkiLcYvkpHn01nU/o57cwR3gmUtbO4ZN4I4lc1QuTg0cLe9IXtkAestCA0g92yt2OmGdsB8Q33w+Sqaws8+PtbQSqPXbvBhuy1pGrHjxf0aIVPoxy6RHQ7P//55VjC/9FAaAm7klbZmeDCRN4bhd/fD8sNr19ThjPEiWrpje6gt0oCXultEmsGFYR+zhE0PHHzG4DVwTnzVD4GdOTTqAPGJ44ou78hEGJ+vb1v51vo+3s3l5+OZPFEv/0ChUuTH361A099pyFPQJUhOAZ/v0vRYi2IJ2us6em05LcG/aKmx9oCqmtp1MXvOKuE7b3D+KvWk6dc669U/cfpnk08famMVPLZOfYEuOgbp65mNxcJvbsvkpS7vh2ae4ivw6yRbQNnWOuzk6tJf+CljZ48kcyaqSfOjHVUSuQ4rKsHKxvy7lRSKsGMBSLEtRssQdQqLa6EvBH4LTEDR2iA3eIEuPYDh27dXf4hitJwm1RYslPAT+DCgLNN21zhPB/GNw10R/lurrRFWH41eD8PsCkKZDew1zcawemXJahAzqbGW9AVFhKFw9zT/YkvbI6Huyr1uTnOREclb0rf0toY0xzrOOyQGxEf7h+hREp6GdYmUQhRcqSDW4cXHZKKjHm/YapmlCUGn/JP+F1149JGmMwY+kFDgG3/1S3bNHCxLkML8ESiFDi9OJsQEUzX0dwQRMy+DrX5dD8/JtlXJbpGEHfXxu62rHf0XLgona9Dix9GW61Al6U+RuJeQ+YTChFbnFL7cCbM35+lXNkleDnNHHmLH/9HxoepeT5auvJNlU7+YQeBY296nAW73XoAAAAA",
+      110,
+      22
+    ]
+  ],
+  "G11-W08-L3-Q32": [
+    {
+      "prompt": "У свечи начальная высота h₀ = 6 дюймов, радиус r = 1 дюйм и k = 1/5. Найди точную высоту h через 20 минут.",
+      "answer": "6-4/pi",
+      "source": "Power Functions, с. 268, по №63"
+    },
+    [
+      "UklGRqQFAABXRUJQVlA4IJgFAADQIQCdASqxADoAPlEijkQjoiGWqgYAOAUEtIALZ78T/x78VfAb+mfjH1c3dH2J20D8gPUB9RPoH82/YT8xecHgBen/71/Pf2e4AoAH1E/s35Vf2bzkv2PuYPU3/G/63+Xn9y9gDwBu3f7d7gH8O/nf+N/uH7of534WP6T/Bft9/lPZ985f7z+7/AX/Kf6F/jv7P+8P+O/////+3T2Deid+3qWkDDigNuOrUNG+BMLG9zTZ3e0TANLd/INP+kJUYYAwjeInOJMeLG8dO9eQD8tgYGwJYQspWdyF98YueRnYGt9maQpUnDOzMP/yoNDYLDnd+HNFd8DA7lWW5hCHn//yQMvUXxDS8AcxDIyyFMtUx0cONFdtsQAA/v3AkY098HXV6L/6zY3fj2VdDHIL2f8tzu6GZ4VIt5VZqzRF2O8De+Uuc9VoQfKtsBVaD+zCiVQjOTvws7o5WVNbZ/IEajzO63cjv1Dg3D1X0s7079MfLgul/5GXpdHj1DmgIPhZ43cP85JkCSH5h/H38dezL64HGQx3YGGCmHfBA5PGCocgPoRLws1yCrvkZeX2a9WpTl8CNv27ShzeZFNuGusUjY20vBdeqJbM1C9lq++61ZRN/PY28SMJf3uyRrcZ9Ogu+MLmvmtBjJgSjeNCP/leaUqCSjFyn9+dv3JxUtlgGVxlW/0tcoQBi3JHVhhHY8YkXBPQOr8cWU0VXj3X5272wz2NaQ75uL7AtvT+pl0yV7xPi2fDn11V5UC5P6gMlND/ZXq6Hc4tvX0Tdjl6HQilP/5jIt1MGgY3puc0mZiT27qNUKs89IA/iydM2u2GQOoS9CaBewRbCv4ICvas4ohU4gD+y+RM8SfocxoTAbsc9bbX8X4R4PSoElLJuURxFo9ovC7P03I612VPWkeRs/T40Spel44qv//D02TFSR9WTbmY/E9JTm0iaheVP8GqjJsRPrrXeuj45kJwEBnC3+oajXLmYelDQC6XNLIU8tUzS+4rsDw2+cFpK9+gerYmPLf93sxGvOp87YwBABEoEEMUiq4GXpNfNuRG5Yd3YbWC+8+QoGLx6/j1nbQWhbJDeH3fFH9AtyO3R694492Y/Q6uzYVceAWyk7aczaWdif899hRQKeNK9PfKRATkYY1Z68K/4ZZzpIyEUDHaSjLuj7cEzlZbuYcSFLaPx4gSCujV2UXbPpj35+4v0RXMz0Rn/QXa6wH76kSSrOhOb6NXENTdZe8MkAf5W8vPZGxAgvZepC3Lju/MwTabHFFHXXX4XKy4K+BjacOS1zRTlrNCJFiJUGEsm5QP8mavCfo33vwz+PEDfYmvmjFRAOmUIbM+w/WYuKHC8zE/7y5IncuL3NWNfM4VaH58/K418x2VNtD5WbXGfqDLHaFEM3Pwg3KUZum5UFlp5qDM62vtQv1NgQ23A5cn58+tN50nWGmv+p6Ca4dqXu2PQvrcUXnlgEPT+hGzf/MluG+T3AVMXPZWEnBsw95hv+oJmi2ccaKPBh/6R/em2AFbuTaUP97ZwhoGTubg0+lvdU35/eqYzi6WJFsNqkZPSTX7mNYlHewxoHnG7tFBnJpsMOMbyt93KgSLA5XZ5rqDqduhd4U+8SiQr4GfrnX7LUvyxKQJ4UEBgag36qaCKhAZcdg24nJQPKzLtd1aBqSV2jNjJFEweglwDjYxHxWfoEPln0lmrRkFyUqLdoewwCCJDukOjMpHq9ggOCWiM7DREJ4g7/vxDbsp6ZsrrDJ8UwSxPY5mMANnqen78c/q/Vvcuyt5C/4QgBmjNO6PBGLT1A8B4M2u4CKsq1SXe+ZJWGYnYPpvzCtqpnzh9sYFD+K8imx0ZF/YOorOQ/Djd5S3ZjswE1gWfVKtjnUCPvf+h4gsVBl3X1Df8Z1hlVToS8X7J01GkAAA",
+      124,
+      41
+    ]
   ]
 };
