@@ -123,17 +123,14 @@
 .chat-unread{display:inline-block;margin-left:4px;padding:1px 6px;border-radius:999px;background:#a92b38;color:#fff;font-size:.78em;font-weight:700}.chat-unread[hidden],#chatNotifications[hidden]{display:none}#chatNotifications{margin-bottom:8px;font-size:.85rem}
 .student-progress-total{display:flex;gap:10px;flex-wrap:wrap;margin:0 0 12px}.student-progress-total>div{flex:1 1 130px;padding:8px 10px;background:#eaf5f8;border-radius:6px}.student-progress-total b{display:block;margin-top:4px;font-size:1.3rem}.student-progress-table{overflow-x:auto}.student-progress-table th,.student-progress-table td{padding:6px;text-align:left}.student-progress-table td{white-space:nowrap}.student-progress-table small{display:block;color:#547180;font-weight:400}
 
-.whiteboard-switch,.whiteboard-tools{display:flex;flex-wrap:wrap;gap:6px}
-.whiteboard-switch[hidden],.whiteboard-panel[hidden],#taskProblemPanel[hidden],#taskAnswerPanel[hidden]{display:none}
-.whiteboard-switch button,.whiteboard-tools button{padding:7px 10px;font-size:.9rem}
-.whiteboard-tools button[aria-pressed="true"],#showWhiteboard[aria-expanded="true"]{background:#087c98;color:#fff}
-.whiteboard-panel{display:flex;flex-direction:column;gap:8px;margin:12px 0;color:#173648}
-#timedQuestions:has(.whiteboard-panel:not([hidden])){display:flex;flex-direction:column;min-width:0}
-.whiteboard-panel:not([hidden]){flex:1 1 auto;margin-bottom:0}
-.whiteboard-scroll{flex:1 0 0;min-height:clamp(320px,calc(100vh - 190px),850px);min-height:clamp(320px,calc(100dvh - 190px),850px);overflow-y:auto;border:1px solid #b5ceda;border-radius:8px;background:#fff}
-.whiteboard-canvas{display:block;width:100%;height:clamp(900px,180vh,1800px);height:clamp(900px,180dvh,1800px);min-height:calc(100% + 260px);background:#fff;touch-action:none;cursor:crosshair}
-.whiteboard-canvas.whiteboard-panning{touch-action:pan-y;cursor:default}
-.whiteboard-panel p{margin:0;font-size:.75rem;color:#4c6676}
+.whiteboard-tools{display:flex;flex-wrap:wrap;gap:6px}
+.whiteboard-tools button[aria-pressed="true"]{background:#087c98;color:#fff}
+#whiteboardPanel{width:min(960px,calc(100% - 24px));max-height:calc(100dvh - 24px);padding:14px;border:1px solid #b5ceda;border-radius:12px;color:#173648}
+#whiteboardPanel::backdrop{background:#17364888}
+#whiteboardTitle{margin:0}
+.whiteboard-scroll{margin-top:8px;max-height:68dvh;overflow:auto;border:1px solid #b5ceda;border-radius:8px;background:#fff}
+.whiteboard-canvas{display:block;width:100%;aspect-ratio:3/4;background:#fff;touch-action:pan-y}
+.whiteboard-canvas.whiteboard-drawing{touch-action:none;cursor:crosshair}
 #taskProblemPanel #instruction{font-size:.85rem;line-height:1.45}
 #problem math{font-size:1.15em}
 #problem{overflow-wrap:anywhere}
@@ -151,21 +148,11 @@
  .math-system-input{width:100%;margin-top:6px}
  #taskAnswerPanel .answer-entry>*{flex:1 1 100%;max-width:100%;min-width:0;font-size:16px}
 }
-</style></head><body data-practice-grade="10"><header><h1>📘 Math Practice <small class="muted">10 классы</small></h1></header><main class="wrap"><section id="student"><div class="panel flex"><label>Имя ученика <input id="studentName" type="text" placeholder="Имя и фамилия" maxlength="100" oninput="saveIdentity()"></label><label>Класс <select id="grade" onchange="refreshTopics()"><option value="10В">10В</option><option value="10Г">10Г</option><option value="10Д">10Д</option></select></label><select id="topic" aria-label="Текущая практика" hidden></select><button type="button" id="openStudentChat" class="secondary">Написать учителю</button></div><div id="assignmentWait" class="panel" role="status">Ожидаем назначения практики учителем.</div><div id="assignedWork" hidden><div id="practiceTimerPanel" class="panel flex between" hidden><div><b>Общее время, включая бонусы:</b> <span id="durationLabel">20 минут</span></div><div class="timerbox">⏱ <span id="practiceTimer">20:00</span></div></div><div id="practiceClosed" class="panel" role="status" hidden><strong>Время вышло. Практика закрыта.</strong><p class="muted">Учителю доступны ответы, отправленные до окончания времени.</p></div><div class="grid"><aside class="panel"><h3>Ваш прогресс</h3><div id="score"></div><p class="muted">Обязательная часть рассчитана примерно на 20 минут. ★ — бонусные задания.</p><div id="chips" class="flex" style="margin-top:16px"></div><p class="muted">✓ верно · ✕ неверно · пусто — не начато. Верно за 1–3 попытки: 1 балл; позже: 0,5.</p></aside><article id="timedQuestions" class="panel"><div class="flex between"><h2 id="number"></h2><strong id="practiceTitle" hidden></strong><span id="taskKind" class="task-kind"></span><div id="whiteboardSwitch" class="whiteboard-switch" role="group" aria-label="Режим работы" hidden>
-<button type="button" id="showWhiteboard" class="secondary" aria-controls="whiteboardPanel" aria-expanded="false">Белая доска</button>
-</div><span id="position" class="muted"></span></div><div id="taskProblemPanel"><p id="instruction" class="muted">Введите точный ответ, например sqrt(5), pi/6 или 1/2.</p><div id="problem" class="problem"></div><p id="problemHint" class="problem-hint" hidden></p></div><section id="whiteboardPanel" class="whiteboard-panel" aria-label="Белая доска" hidden>
-<div class="whiteboard-tools" role="group" aria-label="Инструменты доски">
-<button type="button" id="whiteboardPen" class="secondary" aria-pressed="true">Перо</button>
-<button type="button" id="whiteboardEraser" class="secondary" aria-pressed="false">Ластик</button>
-<button type="button" id="whiteboardScrollMode" class="secondary" aria-pressed="false">Прокрутка</button>
-<button type="button" id="whiteboardUndo" class="secondary" disabled>Отменить</button>
-<button type="button" id="whiteboardClear" class="secondary" disabled>Очистить</button>
-</div><div class="whiteboard-scroll" tabindex="0" role="region" aria-label="Прокручиваемая область доски"><canvas id="whiteboardCanvas" class="whiteboard-canvas" aria-label="Область для рукописного решения"></canvas></div>
-<p>Черновик хранится до обновления страницы.</p>
-</section><div id="taskAnswerPanel" class="task-answer-panel"><label for="answer">Ответ</label><div class="flex answer-entry"><input id="answer" type="text" placeholder="Введите ответ" onkeydown="if(event.key==='Enter')check()"><button onclick="check()">Проверить ответ</button></div><div id="answerPreview" class="answer-preview" hidden><span>В математической записи</span><math id="answerMath"></math></div><div class="keyboard" id="keyboard"></div><div id="feedback" class="status" aria-live="polite"></div><p id="answerListHint" class="muted">Для нескольких решений вводите ответы через запятую. Порядок не важен.</p><div class="flex"><button class="secondary" onclick="move(-1)">← Назад</button><button onclick="move(1)">Следующая →</button></div></div></article></div><div id="timedFiles" class="panel"><h2>Прикрепить решение</h2><label>Фото или документ <input id="workFileInput" type="file" accept=".pdf,.png,.jpg,.jpeg,.webp,.doc,.docx,.txt" onchange="uploadWork(this)"></label><p class="muted">До 5 файлов для каждой практики, каждый до 2 МБ. PDF, фото, Word или TXT.</p><p id="workUploadStatus" role="status"></p><div id="ownWorkFiles"></div></div></div></section><section id="teacher" class="hide">
+</style></head><body data-practice-grade="10"><header><h1>📘 Math Practice <small class="muted">10 классы</small></h1><button type="button" class="secondary" id="showWhiteboard" aria-haspopup="dialog">Смотреть доску учителя</button></header><main class="wrap"><section id="student"><div class="panel flex"><label>Имя ученика <input id="studentName" type="text" placeholder="Имя и фамилия" maxlength="100" oninput="saveIdentity()"></label><label>Класс <select id="grade" onchange="refreshTopics()"><option value="10В">10В</option><option value="10Г">10Г</option><option value="10Д">10Д</option></select></label><select id="topic" aria-label="Текущая практика" hidden></select><button type="button" id="openStudentChat" class="secondary">Написать учителю</button></div><div id="assignmentWait" class="panel" role="status">Ожидаем назначения практики учителем.</div><div id="assignedWork" hidden><div id="practiceTimerPanel" class="panel flex between" hidden><div><b>Общее время, включая бонусы:</b> <span id="durationLabel">20 минут</span></div><div class="timerbox">⏱ <span id="practiceTimer">20:00</span></div></div><div id="practiceClosed" class="panel" role="status" hidden><strong>Время вышло. Практика закрыта.</strong><p class="muted">Учителю доступны ответы, отправленные до окончания времени.</p></div><div class="grid"><aside class="panel"><h3>Ваш прогресс</h3><div id="score"></div><p class="muted">Обязательная часть рассчитана примерно на 20 минут. ★ — бонусные задания.</p><div id="chips" class="flex" style="margin-top:16px"></div><p class="muted">✓ верно · ✕ неверно · пусто — не начато. Верно за 1–3 попытки: 1 балл; позже: 0,5.</p></aside><article id="timedQuestions" class="panel"><div class="flex between"><h2 id="number"></h2><strong id="practiceTitle" hidden></strong><span id="taskKind" class="task-kind"></span><span id="position" class="muted"></span></div><div id="taskProblemPanel"><p id="instruction" class="muted">Введите точный ответ, например sqrt(5), pi/6 или 1/2.</p><div id="problem" class="problem"></div><p id="problemHint" class="problem-hint" hidden></p></div><div id="taskAnswerPanel" class="task-answer-panel"><label for="answer">Ответ</label><div class="flex answer-entry"><input id="answer" type="text" placeholder="Введите ответ" onkeydown="if(event.key==='Enter')check()"><button onclick="check()">Проверить ответ</button></div><div id="answerPreview" class="answer-preview" hidden><span>В математической записи</span><math id="answerMath"></math></div><div class="keyboard" id="keyboard"></div><div id="feedback" class="status" aria-live="polite"></div><p id="answerListHint" class="muted">Для нескольких решений вводите ответы через запятую. Порядок не важен.</p><div class="flex"><button class="secondary" onclick="move(-1)">← Назад</button><button onclick="move(1)">Следующая →</button></div></div></article></div><div id="timedFiles" class="panel"><h2>Прикрепить решение</h2><label>Фото или документ <input id="workFileInput" type="file" accept=".pdf,.png,.jpg,.jpeg,.webp,.doc,.docx,.txt" onchange="uploadWork(this)"></label><p class="muted">До 5 файлов для каждой практики, каждый до 2 МБ. PDF, фото, Word или TXT.</p><p id="workUploadStatus" role="status"></p><div id="ownWorkFiles"></div></div></div></section><section id="teacher" class="hide">
  <div class="panel">
   <div class="flex between teacher-heading"><h2>Результаты класса</h2><div class="flex">
    <button id="teacherSignIn" onclick="teacherLogin()">Войти через Google</button>
+   <button type="button" class="secondary" id="openTeacherWhiteboard" aria-haspopup="dialog">Открыть доску учителя</button>
    <button type="button" id="openTeacherChat" class="secondary">Чат с учениками <span id="chatUnread" class="chat-unread" aria-live="polite" hidden></span></button><button class="secondary" onclick="exportExcel(this)">Скачать Excel</button>
    <details class="teacher-links"><summary>Ссылки ученикам</summary><div id="teacherPracticeLinks"></div></details>
   </div></div>
@@ -929,23 +916,19 @@ function renderStudentScore(items,answers,count){
  const score=practiceScore({answers},items,count);
  $('score').textContent=`Обязательные: ${score.correct}/${count} решено · Итог: ${score.percent}% (${score.points}/${count} баллов)`;
 }
-function syncPracticeWhiteboard(question){
- const scope=question?JSON.stringify([$('grade').value,question.topic,$('studentName').value.trim().toLowerCase()]):null;
- window.practiceWhiteboard?.setTask(scope,question?.id);
-}
+
 function renderStudent(){
  const open=assignmentOpen(),wait=$('assignmentWait');
  $('assignedWork').hidden=!open;
  wait.hidden=open;
  if(!open){
-  syncPracticeWhiteboard(null);
   const grade=$('grade').value;
   wait.textContent=!cloudReady||!assignmentsReady?'Подключаемся к расписанию практик…':
    !$('topic').value?(classAssignments[grade]?'Эта практика пока не открыта для '+grade+'. Дождитесь ссылки на назначенную работу.':'Учитель ещё не назначил практику для '+grade+'. Страница обновится автоматически.'):
    'Введите имя и фамилию, чтобы начать назначенную практику.';
   return;
  }
- renderOwnFiles();updatePracticeTimer();let a=group();if(!a.length){syncPracticeWhiteboard(null);renderProblem('Нет заданий');return}selected=Math.max(0,Math.min(selected,a.length-1));let q=a[selected],r=getRec(),required=requiredCount(a);syncPracticeWhiteboard(q);$('taskKind').textContent=selected<required?'Обязательное':'★ Бонус';$('taskKind').classList.toggle('bonus-column',selected>=required);$('practiceTitle').hidden=!numberedCode(q.topic);$('practiceTitle').textContent=practiceLabel(q.topic);$('instruction').hidden=!!numberedCode(q.topic)&&q.topic!==IDENTITIES_TOPIC;$('number').hidden=!!numberedCode(q.topic);$('number').textContent=q.id;$('position').textContent=`${selected+1} / ${a.length}`;renderProblem(q.prompt.replace(/\b6 decimal places\b/gi,'2 decimal places'));$('answerListHint').hidden=!!q.format||/^10-W[567]L/.test(q.id);$('answer').value='';renderAnswerPreview();$('feedback').textContent='';renderStudentScore(a,r,required);renderChips()}function move(n){selected+=n;renderStudent()}function normalize(s){return String(s).trim().replace(/√\s*\(?([\w\d]+)\)?/g,'sqrt($1)').replace(/π/g,'pi').replace(/\s+/g,'').replace(/−/g,'-').replace(/²/g,'^2').replace(/[×·⋅]/g,'*').replace(/÷/g,'/').replace(/∞|\binf(?:inity)?\b/gi,'Infinity').replace(/\barc(sin|cos|tan|cot)\b/gi,'a$1').replace(/\bln(?=\()/gi,'log')}function equivalent(a,b,tolerance=1e-8){a=normalize(a);b=normalize(b);if(a===b)return true;try{if(typeof math==='undefined')return false;let f=math.compile('('+a+')-('+b+')');return [0.2,0.7,1.3].every(x=>{let v=f.evaluate({x});return typeof v==='number'&&Number.isFinite(v)&&Math.abs(v)<tolerance})}catch(e){return false}}function normalizeAlgebraAnswer(input,variables){
+ renderOwnFiles();updatePracticeTimer();let a=group();if(!a.length){renderProblem('Нет заданий');return}selected=Math.max(0,Math.min(selected,a.length-1));let q=a[selected],r=getRec(),required=requiredCount(a);$('taskKind').textContent=selected<required?'Обязательное':'★ Бонус';$('taskKind').classList.toggle('bonus-column',selected>=required);$('practiceTitle').hidden=!numberedCode(q.topic);$('practiceTitle').textContent=practiceLabel(q.topic);$('instruction').hidden=!!numberedCode(q.topic)&&q.topic!==IDENTITIES_TOPIC;$('number').hidden=!!numberedCode(q.topic);$('number').textContent=q.id;$('position').textContent=`${selected+1} / ${a.length}`;renderProblem(q.prompt.replace(/\b6 decimal places\b/gi,'2 decimal places'));$('answerListHint').hidden=!!q.format||/^10-W[567]L/.test(q.id);$('answer').value='';renderAnswerPreview();$('feedback').textContent='';renderStudentScore(a,r,required);renderChips()}function move(n){selected+=n;renderStudent()}function normalize(s){return String(s).trim().replace(/√\s*\(?([\w\d]+)\)?/g,'sqrt($1)').replace(/π/g,'pi').replace(/\s+/g,'').replace(/−/g,'-').replace(/²/g,'^2').replace(/[×·⋅]/g,'*').replace(/÷/g,'/').replace(/∞|\binf(?:inity)?\b/gi,'Infinity').replace(/\barc(sin|cos|tan|cot)\b/gi,'a$1').replace(/\bln(?=\()/gi,'log')}function equivalent(a,b,tolerance=1e-8){a=normalize(a);b=normalize(b);if(a===b)return true;try{if(typeof math==='undefined')return false;let f=math.compile('('+a+')-('+b+')');return [0.2,0.7,1.3].every(x=>{let v=f.evaluate({x});return typeof v==='number'&&Number.isFinite(v)&&Math.abs(v)<tolerance})}catch(e){return false}}function normalizeAlgebraAnswer(input,variables){
  const letters=new Set(variables.filter(name=>/^[A-Za-z]$/.test(name)));
  return normalize(input).replace(/[·⋅]/g,'*').replace(/[³⁴⁵⁶⁷⁸⁹]/g,c=>'^'+('³⁴⁵⁶⁷⁸⁹'.indexOf(c)+3))
   .replace(/[A-Za-z][A-Za-z0-9_]*/g,name=>name.length>1&&[...name].every(letter=>letters.has(letter))?[...name].join('*'):name);
@@ -1930,6 +1913,7 @@ async function teacherLogin(){
   if(teacherUnsub)teacherUnsub();
   teacherUnsub=dbAPI.onValue(dbAPI.ref(databaseInstance,'math-practice-demo/records'),snap=>{records=snap.val()||{};renderTeacher()},err=>{$('firebaseMessage').textContent='Ошибка чтения результатов: '+err.message});
   $('firebaseMessage').textContent='Вход выполнен.';
+  window.dispatchEvent(new Event('practice-whiteboard-session'));
  }catch(e){$('firebaseMessage').textContent='Ошибка входа учителя: '+e.message;}
 }
 async function setupFirebase(config){
@@ -2067,4 +2051,14 @@ function pointsFor(record, questions) {
   <p class="chat-status" id="chatStatus" role="status"></p>
   <form id="chatForm" class="chat-form" hidden><textarea id="chatMessage" aria-label="Сообщение" placeholder="Сообщение" maxlength="1000" rows="2" required></textarea><button type="submit">Отправить</button></form>
  </div>
-</dialog><script src="../practice-chat.js?v=3"></script><script src="../practice-whiteboard.js?v=scroll"></script><script>syncPracticeWhiteboard(assignmentOpen()?group()[selected]:null);</script></body></html>
+</dialog><script src="../practice-chat.js?v=3"></script><dialog id="whiteboardPanel" aria-labelledby="whiteboardTitle">
+<div class="flex between"><h2 id="whiteboardTitle">Доска учителя</h2><button type="button" id="closeWhiteboard" class="secondary">Закрыть</button></div>
+<div class="whiteboard-tools" hidden role="group" aria-label="Инструменты доски">
+<button type="button" id="whiteboardPen" class="secondary" aria-pressed="true">Перо</button>
+<button type="button" id="whiteboardEraser" class="secondary" aria-pressed="false">Ластик</button>
+<button type="button" id="whiteboardScrollMode" class="secondary" aria-pressed="false">Прокрутка</button>
+<button type="button" id="whiteboardUndo" class="secondary" disabled>Отменить</button>
+<button type="button" id="whiteboardClear" class="secondary" disabled>Очистить</button>
+</div><div class="whiteboard-scroll" tabindex="0" role="region" aria-label="Прокручиваемая область доски"><canvas id="whiteboardCanvas" class="whiteboard-canvas" aria-label="Область для рукописного решения"></canvas></div>
+<p id="whiteboardStatus" class="muted" role="status"></p>
+</dialog><script src="../practice-whiteboard.js?v=shared"></script></body></html>

@@ -1,0 +1,11 @@
+{
+  "rules": {
+    "math-practice-demo": {
+      "teacherWhiteboard": {
+        ".read": "auth != null",
+        ".write": "auth != null && newData.exists() && auth.token.email == 'daiana.koptleuova@gmail.com' && auth.token.email_verified == true && auth.token.firebase.sign_in_provider == 'google.com'",
+        ".validate": "newData.isString() && newData.val().length <= 200000"
+      }
+    }
+  }
+}
