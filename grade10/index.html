@@ -1649,7 +1649,9 @@ const workedTrigSolutions={
  '10-W2L2-15d':['2*pi/3,5*pi/3','При cos(x) = 0 левая часть равна ±1. Делим на cos(x) и получаем tan(x) = −√3. Тогда x = −π/3 + πk, k ∈ ℤ. На заданном промежутке подходят k = 1 и k = 2.']
 };
 function teacherAnswerMath(value,format){
- const text=String(value??'').trim();
+ const raw=String(value??'').trim();
+ // Older attempts stored MathLive's ASCII spelling of infinity.
+ const text=format==='intervals'?raw.replace(/([[(,;])\s*([+−-])?\s*oo(?=\s*[,;\])])/gi,(_,separator,sign='')=>separator+sign+'∞'):raw;
  if(!text)return '—';
  function expression(part){
   part=part.trim();

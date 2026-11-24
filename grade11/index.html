@@ -1361,7 +1361,9 @@ function renderTeacher() {
 }
 const workedTrigSolutions={};
 function teacherAnswerMath(value,format){
- const text=String(value??'').trim();
+ const raw=String(value??'').trim();
+ // Older attempts stored MathLive's ASCII spelling of infinity.
+ const text=format==='intervals'?raw.replace(/([[(,;])\s*([+−-])?\s*oo(?=\s*[,;\])])/gi,(_,separator,sign='')=>separator+sign+'∞'):raw;
  if(!text)return '—';
  function expression(part){
   part=part.trim();
