@@ -540,7 +540,14 @@ for(const [code,prompt,answer,format,sourceUrl] of openStaxExercises){
   answerVariables:[]
  });
 }
-const worksheetIds=new Set([...retiredWorksheetIds,...WORKSHEET_QUESTIONS.map(q=>q.id)]);
+const originalExponentId='G11-W04-L1-Q22';
+const exponentIndex=WORKSHEET_QUESTIONS.findIndex(q=>q.id===originalExponentId);
+if(exponentIndex!==-1){
+ WORKSHEET_QUESTIONS[exponentIndex]={...WORKSHEET_QUESTIONS[exponentIndex],
+  id:originalExponentId+'-small',prompt:'Find the integer exponent m.\nf(x) = x^m,    f(-2) = -32',
+  formulaInPrompt:true,answer:'5'};
+}
+const worksheetIds=new Set([originalExponentId,...retiredWorksheetIds,...WORKSHEET_QUESTIONS.map(q=>q.id)]);
 function mergeWorksheetQuestions(questions){
  return [...questions.filter(q=>!worksheetIds.has(q.id)),...WORKSHEET_QUESTIONS];
 }
@@ -671,7 +678,7 @@ function renderWorksheetFormula(question,problem=$('problem'),hint=$('problemHin
   hint.hidden=false;
   return;
  }
- if(!question.answerVariables)return;
+ if(!question.answerVariables||question.formulaInPrompt)return;
  const simplified=typeof simplifiedFormulaImages!=='undefined'&&simplifiedFormulaImages[question.id];
  const formula=question.textbookFormula||simplified||
   (typeof week1FormulaImages!=='undefined'&&week1FormulaImages[question.id])||
@@ -699,10 +706,15 @@ function renderWorksheetFormula(question,problem=$('problem'),hint=$('problemHin
 function checkWorksheetAnswer(input,question){
  if(question.answer==='no solution')return isCorrect(input,question.answer,1e-8);
  if(question.format==='pairs')return isCorrect(input,question.answer,1e-8,'pairs');
- if(question.format==='intervals'){
-  const intervals=input.replace(/^\s*[a-z]\s*(?:∈|=)\s*/i,'').replace(/∞|\binf(?:inity)?\b/gi,'Infinity');
-  return isCorrect(intervals.replace(/\{([^,;{}]+)\}/g,(_match,point)=>'['+point+','+point+']'),question.answer,1e-8,'intervals');
+ if(/vertical and horizontal asymptotes/i.test(question.prompt)&&question.answer.split(';').length===2){
+  const text=input.trim();
+  const labeled=/^x\s*=\s*(.+?)\s*[,;]?\s*y\s*=\s*(.+)$/i.exec(text);
+  const wrapped=/^\((.*)\)$/.exec(text);
+  const values=labeled?[labeled[1],labeled[2]]:splitAnswerParts(wrapped?wrapped[1]:text,',;');
+  const expected=question.answer.split(';');
+  return values.length===2&&values.every((value,index)=>equivalent(value,expected[index]));
  }
+ if(question.format==='intervals')return isCorrect(input,question.answer,1e-8,'intervals');
  if(question.unorderedRoots){
   const roots=value=>value.split(/[;,]/).map(item=>item.trim().replace(/^[a-z]\d*\s*=\s*/i,'')).join(',');
   return isCorrect(roots(input),roots(question.answer),1e-8);
@@ -748,13 +760,19 @@ function matchesAnswerValue(value,expected,tolerance,allowRounding){
   return Number(normalize(value))===rounded;
  }catch{return false;}
 }
-function splitAnswerParts(value,separators){
+function splitAnswerParts(value,separators,adjacentPairs=false){
  const parts=[];
  let depth=0,start=0;
  for(let i=0;i<value.length;i++){
   const char=value[i];
   if('([{'.includes(char))depth++;
-  else if(')]}'.includes(char))depth--;
+  else if(')]}'.includes(char)){
+   depth--;
+   if(adjacentPairs&&depth===0&&char===')'&&/^\s*\(/.test(value.slice(i+1))){
+    parts.push(value.slice(start,i+1).trim());
+    start=i+1;
+   }
+  }
   else if(depth===0&&separators.includes(char)){
    parts.push(value.slice(start,i).trim());
    start=i+1;
@@ -763,27 +781,78 @@ function splitAnswerParts(value,separators){
  parts.push(value.slice(start).trim());
  return parts.filter(Boolean);
 }
+function equivalentIntervalSets(input,answer,tolerance=1e-8){
+ const compare=(a,b)=>a===b?0:Math.abs(a-b)<tolerance?0:a<b?-1:1;
+ function endpoint(value){
+  const infinity=/^([-−+])?\s*(?:∞|oo|inf(?:inity)?)$/i.exec(value.trim());
+  if(infinity)return ['-','−'].includes(infinity[1])?-Infinity:Infinity;
+  const result=math.evaluate(normalize(value));
+  if(typeof result!=='number'||!Number.isFinite(result))throw Error('Invalid endpoint');
+  return result;
+ }
+ function parse(value){
+  const text=value.trim().replace(/^[a-z]\s*[∈=]\s*/i,'');
+  const intervals=splitAnswerParts(text,';∪,').map(part=>{
+   const point=/^\{([^,;{}]+)\}$/.exec(part);
+   if(point){const x=endpoint(point[1]);return [x,x,true,true];}
+   const relation=/^[a-z]\s*(<=|>=|≤|≥|<|>)\s*(.+)$/i.exec(part);
+   if(relation){
+    const [,sign,bound]=relation,x=endpoint(bound);
+    if(!Number.isFinite(x))throw Error('Invalid inequality bound');
+    const closed=sign.length===2||sign==='≤'||sign==='≥';
+    return /^[<≤]/.test(sign)?[-Infinity,x,false,closed]:[x,Infinity,closed,false];
+   }
+   if(!/^[[(]/.test(part)||!/[\])]$/.test(part))throw Error('Invalid interval');
+   const coords=splitAnswerParts(part.slice(1,-1),',;');
+   if(coords.length!==2)throw Error('Invalid interval endpoints');
+   const [left,right]=coords.map(endpoint);
+   const closedLeft=part[0]==='[',closedRight=part.at(-1)===']';
+   if(left>right||(left===right&&(!closedLeft||!closedRight))||
+    (closedLeft&&!Number.isFinite(left))||(closedRight&&!Number.isFinite(right)))throw Error('Invalid interval bounds');
+   return [left,right,closedLeft,closedRight];
+  }).sort((a,b)=>a[0]<b[0]?-1:a[0]>b[0]?1:Number(b[2])-Number(a[2]));
+  const merged=[];
+  for(const next of intervals){
+   const last=merged.at(-1);
+   if(!last||next[0]>last[1]||(next[0]===last[1]&&!next[2]&&!last[3])){
+    merged.push(next);
+   }else if(next[1]>last[1]){
+    last[1]=next[1];last[3]=next[3];
+   }else if(next[1]===last[1]){
+    last[3] ||= next[3];
+   }
+  }
+  return merged;
+ }
+ try{
+  const actual=parse(input),expected=parse(answer);
+  return actual.length>0&&actual.length===expected.length&&actual.every(([left,right,closedLeft,closedRight],i)=>{
+   const [a,b,includeA,includeB]=expected[i];
+   return compare(left,a)===0&&compare(right,b)===0&&closedLeft===includeA&&closedRight===includeB;
+  });
+ }catch{return false;}
+}
+
 function isCorrect(input,answer,tolerance,format,variables,allowRounding){
+ if(format==='intervals')return equivalentIntervalSets(input,answer,tolerance);
  if(variables)return equivalentExpression(input,answer,variables);
  if(answer==='зависимы'||answer==='независимы')return input.trim().toLowerCase()===answer;if(answer==='no solution')return ['no solution','no solutions','нет решений','∅'].includes(input.trim().toLowerCase());const parts=value=>{
  const text=value.trim().replace(/^[A-Za-z]\s*∈\s*/,'').replace(/^\{([\s\S]*)\}$/,'$1');
  const separators=format?(/^[[(]/.test(text)?';∪,':';∪'):',;';
- const separated=splitAnswerParts(text,separators);
+ if(format==='pairs'&&!text.startsWith('('))return [text];
+ const separated=splitAnswerParts(text,separators,format==='pairs');
  return format?separated:separated.map(part=>part.replace(/^[A-Za-z](?:_?\d+)?\s*=\s*/,''));
 };
-const parse=(part,student)=>{
+const parse=part=>{
  if(!format)return ['',part];
  const left=/^[[(]/.test(part)?part[0]:'',right=left&&/[\])]$/.test(part)?part.at(-1):'';
- const coords=splitAnswerParts(part.slice(left?1:0,right?-1:undefined),format==='intervals'?',;':',');
+ const coords=splitAnswerParts(part.slice(left?1:0,right?-1:undefined),format==='pairs'?',;':',');
  if(coords.length!==2)return null;
- // MathLive used to save infinity as the letters "oo".
- const [x,y]=format==='intervals'?coords.map(value=>
-  value.replace(/^[-−+]?\s*(?:∞|oo|inf(?:inity)?)$/i,match=>/^[-−]/.test(match)?'−∞':'∞')):coords;
- if(format==='intervals'&&(!left||!right))return null;
- if(format==='pairs'&&student&&(left!=='('||right!==')'))return null;
- return [format==='intervals'?left+right:'',x,y];
+ const [x,y]=coords;
+ if(format==='pairs'&&(left||right)&&(left!=='('||right!==')'))return null;
+ return ['',x,y];
 };
-const a=parts(input).map(x=>parse(x,true)),b=parts(answer).map(x=>parse(x,false));
+const a=parts(input).map(parse),b=parts(answer).map(parse);
 if(a.length!==b.length||a.some(x=>!x)||b.some(x=>!x))return false;
 const used=new Set();
 return a.every(([type,...values])=>{
