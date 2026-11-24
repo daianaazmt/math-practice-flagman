@@ -1068,7 +1068,10 @@ function isCorrect(input,answer,tolerance,format,variables,allowRounding){
  if(answer==='зависимы'||answer==='независимы')return input.trim().toLowerCase()===answer;if(answer==='no solution')return ['no solution','no solutions','нет решений','∅'].includes(input.trim().toLowerCase());const parts=value=>{
  const text=value.trim().replace(/^[A-Za-z]\s*∈\s*/,'').replace(/^\{([\s\S]*)\}$/,'$1');
  const separators=format?(/^[[(]/.test(text)?';∪,':';∪'):',;';
- if(format==='pairs'&&!text.startsWith('('))return [text];
+ if(format==='pairs'&&!text.startsWith('(')){
+  const groups=splitAnswerParts(text,';');
+  return groups.length>1&&groups.every(group=>splitAnswerParts(group,',').length===2)?groups:[text];
+ }
  const separated=splitAnswerParts(text,separators,format==='pairs');
  return format?separated:separated.map(part=>part.replace(/^[A-Za-z](?:_?\d+)?\s*=\s*/,''));
 };
