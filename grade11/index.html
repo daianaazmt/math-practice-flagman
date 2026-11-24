@@ -643,7 +643,7 @@ function renderStudent(){
    'Введите имя и фамилию, чтобы начать назначенную практику.';
   return;
  }
- renderOwnFiles();updatePracticeTimer();let a=group();if(!a.length){renderProblem('Нет заданий');return}selected=Math.max(0,Math.min(selected,a.length-1));let q=a[selected],r=getRec(),required=requiredCount(a);$('taskKind').textContent=selected<required?'Обязательное':'★ Бонус';$('taskKind').classList.toggle('bonus-column',selected>=required);$('number').textContent=localizedTopic(q.topic);$('position').textContent=`${selected+1} / ${a.length}`;const prompt=localizedPrompt(q).replace(/\b6 decimal places\b/gi,'2 decimal places');renderProblem(allowsTwoDecimalPlaces(q)&&!/\b2 decimal places\b/i.test(prompt)?prompt+' Use exact values or round to 2 decimal places.':prompt);renderWorksheetFormula(q);$('answerListHint').hidden=!!q.format||!!q.answerVariables;$('answer').value='';renderAnswerPreview();$('feedback').textContent='';renderStudentScore(a,r,required);renderChips()}function move(n){selected+=n;renderStudent()}function normalize(s){return String(s).trim().replace(/√\s*\(?([\w\d]+)\)?/g,'sqrt($1)').replace(/π/g,'pi').replace(/\s+/g,'').replace(/−/g,'-').replace(/²/g,'^2').replace(/[×·⋅]/g,'*').replace(/÷/g,'/').replace(/∞|\binf(?:inity)?\b/gi,'Infinity').replace(/\barc(sin|cos|tan|cot)\b/gi,'a$1').replace(/\bln(?=\()/gi,'log')}function equivalent(a,b,tolerance=1e-8){a=normalize(a);b=normalize(b);if(a===b)return true;try{if(typeof math==='undefined')return false;let f=math.compile('('+a+')-('+b+')');return [0.2,0.7,1.3].every(x=>{let v=f.evaluate({x});return typeof v==='number'&&Number.isFinite(v)&&Math.abs(v)<tolerance})}catch(e){return false}}function normalizeAlgebraAnswer(input,variables){
+ renderOwnFiles();updatePracticeTimer();let a=group();if(!a.length){renderProblem('Нет заданий');return}selected=Math.max(0,Math.min(selected,a.length-1));let q=a[selected],r=getRec(),required=requiredCount(a);$('taskKind').textContent=selected<required?'Обязательное':'★ Бонус';$('taskKind').classList.toggle('bonus-column',selected>=required);$('number').textContent=localizedTopic(q.topic);$('position').textContent=`${selected+1} / ${a.length}`;const prompt=localizedPrompt(q).replace(/\b6 decimal places\b/gi,'2 decimal places');renderProblem(allowsTwoDecimalPlaces(q)&&!/\b2 decimal places\b/i.test(prompt)?prompt+' Use exact values or round to 2 decimal places.':prompt);renderWorksheetFormula(q);$('answerListHint').hidden=!!q.format||!!q.answerVariables;$('answer').value='';renderAnswerPreview();$('feedback').textContent='';renderStudentScore(a,r,required);renderChips()}function move(n){selected+=n;renderStudent()}function normalize(s){return String(s).trim().replace(/√\s*\(?([\w\d]+)\)?/g,'sqrt($1)').replace(/π/g,'pi').replace(/\s+/g,'').replace(/−/g,'-').replace(/²/g,'^2').replace(/[×·⋅]/g,'*').replace(/÷/g,'/').replace(/≤/g,'<=').replace(/≥/g,'>=').replace(/≠/g,'!=').replace(/∞|\binf(?:inity)?\b/gi,'Infinity').replace(/\barc(sin|cos|tan|cot)\b/gi,'a$1').replace(/\bln(?=\()/gi,'log')}function equivalent(a,b,tolerance=1e-8){a=normalize(a);b=normalize(b);if(a===b)return true;try{if(typeof math==='undefined')return false;let f=math.compile('('+a+')-('+b+')');return [0.2,0.7,1.3].every(x=>{let v=f.evaluate({x});return typeof v==='number'&&Number.isFinite(v)&&Math.abs(v)<tolerance})}catch(e){return false}}function normalizeAlgebraAnswer(input,variables){
  const letters=new Set(variables.filter(name=>/^[A-Za-z]$/.test(name)));
  return normalize(input).replace(/[·⋅]/g,'*').replace(/[³⁴⁵⁶⁷⁸⁹]/g,c=>'^'+('³⁴⁵⁶⁷⁸⁹'.indexOf(c)+3))
   .replace(/[A-Za-z][A-Za-z0-9_]*/g,name=>name.length>1&&[...name].every(letter=>letters.has(letter))?[...name].join('*'):name);
@@ -774,9 +774,11 @@ function isCorrect(input,answer,tolerance,format,variables,allowRounding){
 const parse=(part,student)=>{
  if(!format)return ['',part];
  const left=/^[[(]/.test(part)?part[0]:'',right=left&&/[\])]$/.test(part)?part.at(-1):'';
- const coords=splitAnswerParts(part.slice(left?1:0,right?-1:undefined),',');
+ const coords=splitAnswerParts(part.slice(left?1:0,right?-1:undefined),format==='intervals'?',;':',');
  if(coords.length!==2)return null;
- const [x,y]=coords;
+ // MathLive used to save infinity as the letters "oo".
+ const [x,y]=format==='intervals'?coords.map(value=>
+  value.replace(/^[-−+]?\s*(?:∞|oo|inf(?:inity)?)$/i,match=>/^[-−]/.test(match)?'−∞':'∞')):coords;
  if(format==='intervals'&&(!left||!right))return null;
  if(format==='pairs'&&student&&(left!=='('||right!==')'))return null;
  return [format==='intervals'?left+right:'',x,y];
@@ -852,12 +854,20 @@ function renderProblem(source,problem=$('problem'),hint=$('problemHint')){
  }
  problem.innerHTML=markup+safe(statement.slice(cursor));
 }
-let formulaAnswer=null;
+let formulaAnswer=null,formulaToAscii;
 const formulaKeys={"α":"\\alpha","β":"\\beta","γ":"\\gamma","δ":"\\delta","θ":"\\theta","λ":"\\lambda","μ":"\\mu","φ":"\\phi","ω":"\\omega","π":"\\pi","2π":"2\\pi","a/b":"\\frac{#0}{#?}","√x":"\\sqrt{#0}","ⁿ√x":"\\sqrt[#?]{#0}","x²":"#@^2","xⁿ":"#@^{#?}","|x|":"\\left|#0\\right|","ln(x)":"\\ln(#0)","log₁₀(x)":"\\log_{10}(#0)","logᵦ(x)":"\\log_{#?}(#0)","×":"\\times","÷":"\\div","≤":"\\le","≥":"\\ge","≠":"\\ne","∪":"\\cup","∩":"\\cap","∈":"\\in","∞":"\\infty","°":"^{\\circ}","ℝ":"\\mathbb{R}","ℤ":"\\mathbb{Z}","∅":"\\varnothing","{ }":"\\left\\{#0\\right\\}","π/2":"\\frac{\\pi}{2}","π/3":"\\frac{\\pi}{3}","π/4":"\\frac{\\pi}{4}","π/6":"\\frac{\\pi}{6}","sin":"\\sin(#0)","cos":"\\cos(#0)","tan":"\\tan(#0)","cot":"\\cot(#0)","arcsin":"\\arcsin(#0)","arccos":"\\arccos(#0)","arctan":"\\arctan(#0)","arccot":"\\operatorname{arccot}(#0)","sin²":"(\\sin(#0))^2","cos²":"(\\cos(#0))^2","tan²":"(\\tan(#0))^2"};
 function syncFormulaAnswer(){
  const plain=/^\\text\{([^{}]*)\}$/.exec(formulaAnswer.value);
  if(plain){$('answer').value=plain[1];return;}
- $('answer').value=formulaAnswer.getValue('ascii-math')
+ // Export multiplication as "*" without confusing it with the variable x.
+ const latex=formulaAnswer.value.replace(/\\times(?![a-zA-Z])/g,()=>String.raw`\cdot `)
+  .replace(/\\left\s*\|/g,()=>String.raw`\operatorname{abs}(`)
+  .replace(/\\right\s*\|/g,')');
+ $('answer').value=formulaToAscii(latex)
+  .replace(/\boo\b/g,'∞').replace(/bbb\s*"(R|Z)"/g,(_,set)=>set==='R'?'ℝ':'ℤ')
+  .replace(/\s+in\s+/g,' ∈ ').replace(/O\//g,'∅').replace(/\\([{}])/g,'$1')
+  .replace(/<=/g,'≤').replace(/>=/g,'≥').replace(/!=/g,'≠')
+  .replace(/\^@/g,'°').replace(/-:/g,'/')
   .replace(/\barc(sin|cos|tan|cot)\b/g,'a$1').replace(/\bln\b/g,'log')
   .replace(/\blog\s*_\(?10\)?\s*\(/g,'log10(')
   .replace(/\blog\s*_\(?([a-zA-Z0-9]+)\)?\s*\(([^()]*)\)/g,'(log($2)/log($1))')
@@ -867,7 +877,8 @@ function syncFormulaAnswer(){
 async function setupFormulaAnswer(){
  if(new URLSearchParams(location.search).get('teacher')==='1')return;
  try{
-  const {MathfieldElement,convertAsciiMathToLatex}=await import('https://cdn.jsdelivr.net/npm/mathlive@0.101.0/dist/mathlive.min.mjs');
+  const {MathfieldElement,convertAsciiMathToLatex,convertLatexToAsciiMath}=await import('https://cdn.jsdelivr.net/npm/mathlive@0.101.0/dist/mathlive.min.mjs');
+  formulaToAscii=convertLatexToAsciiMath;
   const input=$('answer'),field=new MathfieldElement();
   field.className='answer-editor';field.setAttribute('aria-label','Математический ответ');
   field.mathVirtualKeyboardPolicy='manual';input.after(field);formulaAnswer=field;
